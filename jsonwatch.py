@@ -30,10 +30,11 @@ class json_request_command(object):
 def json_print(x):
     print(json.dumps(x, indent=4))
 
-def poll_loop(interval, req, date=False):
+def poll_loop(interval, req, date=True, initial_value=True):
     prev_output = None
     output = req.perform()
-    json_print(output)
+    if initial_value:
+        json_print(output)
     while True:
         time.sleep(interval)
         prev_output, output = output, req.perform()
@@ -51,8 +52,16 @@ def main():
                         default='', required=False, metavar='command',
                         dest='command')
     parser.add_argument('-n', '--interval', help='interval',
-                        default=5, type=int, required=False, metavar='seconds',
-                        dest='interval')
+                        default=5, type=int, required=False,
+                        metavar='seconds', dest='interval')
+    parser.add_argument('--no-date',
+                        help='don\'t print date and time for each diff',
+                        default=True, required=False,
+                        dest='print_date', action='store_false')
+    parser.add_argument('--no-initial-value',
+                        help='don\'t print the initial JSON values',
+                        default=True, required=False,
+                        dest='print_init_val', action='store_false')
     # Process command line arguments.
     args = parser.parse_args()
 
@@ -66,7 +75,7 @@ def main():
         req = json_request_url(args.url)
     else:
         req = json_request_command(args.command)
-    poll_loop(args.interval, req)
+    poll_loop(args.interval, req, args.print_date, args.print_init_val)
 
 if __name__ == "__main__":
     main()
