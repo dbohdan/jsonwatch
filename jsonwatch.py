@@ -10,26 +10,24 @@ import sys
 import subprocess
 import time
 import datetime
-import difflib
-from jsondiff import json_diff, json_flatten, json_flat_diff_invert, \
-                       c_keys, json_diff_str
+from jsondiff import json_diff, json_diff_str
 
-class json_request_url(object):
+class JSONRequestURL(object):
     def __init__(self, url):
         self.url = url
 
     def perform(self):
         return json.loads(urllib2.urlopen(self.url).read())
 
-class json_request_command(object):
+class JSONRequestCommand(object):
     def __init__(self, command):
         self.command = command
 
     def perform(self):
         return json.loads(subprocess.check_output(self.command, shell=True))
 
-def json_print(x):
-    print(json.dumps(x, indent=4))
+def json_print(jsn):
+    print(json.dumps(jsn, indent=4))
 
 def poll_loop(interval, req, date=True, initial_values=True):
     prev_output = None
@@ -50,10 +48,14 @@ def poll_loop(interval, req, date=True, initial_values=True):
                 msg = json_diff_str(diff)
                 # If msg is multi-line print each difference on a new line
                 # with indentation.
+                prefix = ""
+                if date:
+                    prefix += datetime.datetime.now().isoformat()
                 if len(msg) > 1:
-                    print(datetime.datetime.now().isoformat(), "\n   ", "\n    ".join(msg))
+                    print(prefix, \
+                           "\n   ", "\n    ".join(msg))
                 else:
-                    print(datetime.datetime.now().isoformat(), msg[0])
+                    print(prefix, msg[0])
         except Exception, e:
             print(str(e))
 
@@ -86,9 +88,9 @@ def main():
 
     req = None
     if args.url != '':
-        req = json_request_url(args.url)
+        req = JSONRequestURL(args.url)
     else:
-        req = json_request_command(args.command)
+        req = JSONRequestCommand(args.command)
     poll_loop(args.interval, req, args.print_date, args.print_init_val)
 
 if __name__ == "__main__":

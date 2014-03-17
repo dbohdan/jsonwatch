@@ -2,11 +2,11 @@
 
 from __future__ import print_function
 
-def json_flat_diff_invert(d):
+def json_flat_diff_invert(diff):
     res_a, res_b = {}, {}
-    for key in d:
-        res_a[key] = d[key][0]
-        res_b[key] = d[key][1]
+    for key in diff:
+        res_a[key] = json_flatten(diff[key][0])
+        res_b[key] = json_flatten(diff[key][1])
     return res_a, res_b
 
 def json_flatten(a, prefix=''):
@@ -19,8 +19,9 @@ def json_flatten(a, prefix=''):
 
     res = {}
     if isinstance(a, list):
-        for n, el in enumerate(a):
-            add_flat(res, prefix, json_flatten(el, prefix + "[{0}]".format(n)))
+        for n, elem in enumerate(a):
+            add_flat(res, prefix, json_flatten(elem, \
+                                               prefix + "[{0}]".format(n)))
     elif isinstance(a, dict):
         for key in a.keys():
             new_prefix = prefix
@@ -39,7 +40,8 @@ def c_keys(a, b):
     a_keys = set(a.keys())
     b_keys = set(b.keys())
     common_keys = a_keys.intersection(b_keys)
-    return common_keys, a_keys, b_keys, a_keys - common_keys, b_keys - common_keys
+    return common_keys, a_keys, b_keys, \
+            a_keys - common_keys, b_keys - common_keys
 
 def json_diff_str(d):
     res = []
@@ -48,7 +50,8 @@ def json_diff_str(d):
     for key in from_keys:
         res.append("- {0}".format(flat_diff_from[key]))
     for key in common_keys:
-        res.append("{0}: {1} -> {2}".format(key, flat_diff_from[key], flat_diff_to[key]))
+        res.append("{0}: {1} -> {2}".format(key, flat_diff_from[key], \
+                                            flat_diff_to[key]))
     for key in to_keys:
         res.append("+ {0}".format(flat_diff_to[key]))
     return res
@@ -77,7 +80,7 @@ def json_diff(a, b):
 
     elif isinstance(a, dict) and isinstance(b, dict):
         res = {}
-        common_keys, a_keys, b_keys, a_only_keys, b_only_keys = c_keys(a, b)
+        common_keys, _, _, a_only_keys, b_only_keys = c_keys(a, b)
 
         for key in common_keys:
             d = json_diff(a[key], b[key])
@@ -100,7 +103,8 @@ def json_diff(a, b):
     return res
 
 def tests():
-    # Based on data from http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua.
+    # Based on data from
+    # http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua.
     data1 = {u'clouds': {u'all': 92}, u'name': u'Kiev', u'coord': {
     u'lat': 50.43, u'lon': 30.52}, u'sys': {u'country': u'UA',
     u'message': 0.0051, u'sunset': 1394985874, u'sunrise': 1394942901
@@ -126,6 +130,7 @@ def tests():
     data3 = {u'clouds': {u'all': 92}}
     print(json_diff(data1, data2) == {u'weather': [{u'main': (u'Rain'
     , u'Lain')}], u'name': (u'Kiev', u'Kyiv')})
+    print(json_flat_diff_invert(json_flatten(json_diff(data1, data3))))
     #print(json_diff(data1, data3), "\n", json_diff(data3, data1))
     #for key in json_flatten(data1):
     #    print(key, ":", json_flatten(data1)[key])
