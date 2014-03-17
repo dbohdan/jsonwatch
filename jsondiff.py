@@ -42,16 +42,16 @@ def c_keys(a, b):
     return common_keys, a_keys, b_keys, a_keys - common_keys, b_keys - common_keys
 
 def json_diff_str(d):
-    s = ''
+    res = []
     flat_diff_from, flat_diff_to = json_flat_diff_invert(json_flatten(d))
     common_keys, _, _, from_keys, to_keys = c_keys(flat_diff_from, flat_diff_to)
     for key in from_keys:
-        s += "- {0}\n".format(flat_diff_from[key])
+        res.append("- {0}".format(flat_diff_from[key]))
     for key in common_keys:
-        s += "{0}: {1} -> {2}\n".format(key, flat_diff_from[key], flat_diff_to[key])
+        res.append("{0}: {1} -> {2}".format(key, flat_diff_from[key], flat_diff_to[key]))
     for key in to_keys:
-        s += "+ {0}\n".format(flat_diff_to[key])
-    return s
+        res.append("+ {0}".format(flat_diff_to[key]))
+    return res
 
 def json_diff(a, b):
     """Returns difference between two structures."""

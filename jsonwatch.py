@@ -48,15 +48,12 @@ def poll_loop(interval, req, date=True, initial_values=True):
             diff = json_diff(prev_output, output)
             if diff is not None:
                 msg = json_diff_str(diff)
-                msg_lines = msg.split("\n")
                 # If msg is multi-line print each difference on a new line
                 # with indentation.
-                if len(msg_lines) > 1:
-                    print(datetime.datetime.now().isoformat())
-                    for s in msg_lines:
-                        print("   ", s)
+                if len(msg) > 1:
+                    print(datetime.datetime.now().isoformat(), "\n   ", "\n    ".join(msg))
                 else:
-                    print(datetime.datetime.now().isoformat(), msg)
+                    print(datetime.datetime.now().isoformat(), msg[0])
         except Exception, e:
             print(str(e))
 
