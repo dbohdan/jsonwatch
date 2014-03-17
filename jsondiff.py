@@ -48,7 +48,7 @@ def json_diff_str(d):
     for key in from_keys:
         s += "- {0}\n".format(flat_diff_from[key])
     for key in common_keys:
-        s += "{0}: {1} -> {2}".format(key, flat_diff_from[key], flat_diff_to[key])
+        s += "{0}: {1} -> {2}\n".format(key, flat_diff_from[key], flat_diff_to[key])
     for key in to_keys:
         s += "+ {0}\n".format(flat_diff_to[key])
     return s
@@ -90,11 +90,12 @@ def json_diff(a, b):
         for key in b_only_keys:
             res[key] = (None, b[key])
 
-        if res == {}:
-            res = None
     else:
         if a != b:
             res = (a, b)
+
+    if res == {} or res == []:
+        res = None
 
     return res
 
