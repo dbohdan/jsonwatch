@@ -10,7 +10,8 @@ import sys
 import subprocess
 import time
 import datetime
-from jsondiff import json_diff, json_diff_str
+import traceback
+from jsondiff import json_diff, json_diff_str, json_flatten, json_flat_diff
 
 class JSONRequestURL(object):
     def __init__(self, url):
@@ -36,19 +37,22 @@ def poll_loop(interval, req, date=True, initial_values=True):
         output = req.perform()
         if initial_values:
             json_print(output)
+        output = json_flatten(output)
     except Exception, e:
-        print(str(e))
+        #print(str(e))
+        print(traceback.format_exc())
     while True:
         time.sleep(interval)
         try:
-            prev_output, output = output, req.perform()
-            #print(prev_output, output)
-            diff = json_diff(prev_output, output)
+            prev_output, output = output, json_flatten(req.perform())
+            diff = json_flat_diff(prev_output, output)
+            print(diff)
             if diff is not None:
-                msg = json_diff_str(diff)
+                msg = json_diff_str(diff, True)
+                msg.sort()
                 # If msg is multi-line print each difference on a new line
                 # with indentation.
-                prefix = ""
+                prefix = ''
                 if date:
                     prefix += datetime.datetime.now().isoformat()
                 if len(msg) > 1:
@@ -57,7 +61,8 @@ def poll_loop(interval, req, date=True, initial_values=True):
                 else:
                     print(prefix, msg[0])
         except Exception, e:
-            print(str(e))
+            print(traceback.format_exc())
+            #print(str(e))
 
 def main():
     parser = argparse.ArgumentParser(description='Track changes in JSON data')
