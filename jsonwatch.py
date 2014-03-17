@@ -11,7 +11,8 @@ import subprocess
 import time
 import datetime
 import difflib
-from jsondiff import json_diff, json_flatten, json_flat_diff_invert, c_keys, json_diff_str
+from jsondiff import json_diff, json_flatten, json_flat_diff_invert, \
+                       c_keys, json_diff_str
 
 class json_request_url(object):
     def __init__(self, url):
@@ -30,18 +31,34 @@ class json_request_command(object):
 def json_print(x):
     print(json.dumps(x, indent=4))
 
-def poll_loop(interval, req, date=True, initial_value=True):
+def poll_loop(interval, req, date=True, initial_values=True):
     prev_output = None
-    output = req.perform()
-    if initial_value:
-        json_print(output)
+    output = None
+    try:
+        output = req.perform()
+        if initial_values:
+            json_print(output)
+    except Exception, e:
+        print(str(e))
     while True:
         time.sleep(interval)
-        prev_output, output = output, req.perform()
-        #print(prev_output, output)
-        diff = json_diff(prev_output, output)
-        if diff is not None:
-            print(datetime.datetime.now().isoformat(), json_diff_str(diff))
+        try:
+            prev_output, output = output, req.perform()
+            #print(prev_output, output)
+            diff = json_diff(prev_output, output)
+            if diff is not None:
+                msg = json_diff_str(diff)
+                msg_lines = msg.split("\n")
+                # If msg is multi-line print each difference on a new line
+                # with indentation.
+                if len(msg_lines) > 1:
+                    print(datetime.datetime.now().isoformat())
+                    for s in msg_lines:
+                        print("   ", s)
+                else:
+                    print(datetime.datetime.now().isoformat(), msg)
+        except Exception, e:
+            print(str(e))
 
 def main():
     parser = argparse.ArgumentParser(description='Track changes in JSON data')
@@ -58,7 +75,7 @@ def main():
                         help='don\'t print date and time for each diff',
                         default=True, required=False,
                         dest='print_date', action='store_false')
-    parser.add_argument('--no-initial-value',
+    parser.add_argument('--no-initial-values',
                         help='don\'t print the initial JSON values',
                         default=True, required=False,
                         dest='print_init_val', action='store_false')
