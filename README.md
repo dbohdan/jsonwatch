@@ -39,7 +39,7 @@ Testing `jsonwatch`.
 
 Cryptocurrency daemon information (including balance changes).
 
-    $ jsonwatch -n 60 --no-initial-values -c "dogecoind getinfo"
+    $ jsonwatch --no-initial-values -c "dogecoind getinfo"
 
     2014-03-18T14:16:57.855226 .blocks: 145779 -> 145780
     2014-03-18T14:17:07.922137
