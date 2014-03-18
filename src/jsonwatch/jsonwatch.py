@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# jsonwatch 0.1.0
 # Copyright 2014 Danyil Bohdan
 
 from __future__ import print_function
@@ -11,7 +12,8 @@ import subprocess
 import time
 import datetime
 import traceback
-from jsondiff import json_diff, json_diff_str, json_flatten, json_flat_diff
+from jsondiff import json_flatten, json_flat_diff, json_diff_str
+
 
 class JSONRequestURL(object):
     def __init__(self, url):
@@ -20,6 +22,7 @@ class JSONRequestURL(object):
     def perform(self):
         return json.loads(urllib2.urlopen(self.url).read())
 
+
 class JSONRequestCommand(object):
     def __init__(self, command):
         self.command = command
@@ -27,8 +30,10 @@ class JSONRequestCommand(object):
     def perform(self):
         return json.loads(subprocess.check_output(self.command, shell=True))
 
+
 def json_print(jsn):
     print(json.dumps(jsn, indent=4))
+
 
 def poll_loop(interval, req, date=True, initial_values=True):
     prev_output = None
@@ -38,7 +43,7 @@ def poll_loop(interval, req, date=True, initial_values=True):
         if initial_values:
             json_print(output)
         output = json_flatten(output)
-    except Exception, e:
+    except Exception:
         #print(str(e))
         print(traceback.format_exc())
     while True:
@@ -46,9 +51,8 @@ def poll_loop(interval, req, date=True, initial_values=True):
         try:
             prev_output, output = output, json_flatten(req.perform())
             diff = json_flat_diff(prev_output, output)
-            print(diff)
             if diff is not None:
-                msg = json_diff_str(diff, True)
+                msg = json_diff_str(diff)
                 msg.sort()
                 # If msg is multi-line print each difference on a new line
                 # with indentation.
@@ -60,9 +64,10 @@ def poll_loop(interval, req, date=True, initial_values=True):
                            "\n   ", "\n    ".join(msg))
                 else:
                     print(prefix, msg[0])
-        except Exception, e:
+        except Exception:
             print(traceback.format_exc())
             #print(str(e))
+
 
 def main():
     parser = argparse.ArgumentParser(description='Track changes in JSON data')
@@ -97,6 +102,7 @@ def main():
     else:
         req = JSONRequestCommand(args.command)
     poll_loop(args.interval, req, args.print_date, args.print_init_val)
+
 
 if __name__ == "__main__":
     main()
