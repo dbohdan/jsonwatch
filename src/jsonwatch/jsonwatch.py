@@ -21,9 +21,13 @@ class JSONRequestURL(object):
     """Abstracts away requests for JSON data from URLs."""
     def __init__(self, url):
         self.url = url
+        self.opener = urllib2.build_opener()
+        # User agent needed for some APIs that decide whether to feed
+        # you JSON data or a webpage/error 403 based on it.
+        self.opener.addheaders = [('User-agent', 'curl')]
 
     def perform(self):
-        return json.loads(urllib2.urlopen(self.url).read())
+        return json.loads(self.opener.open(self.url).read())
 
 
 class JSONRequestCommand(object):
