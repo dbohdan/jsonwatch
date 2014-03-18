@@ -49,28 +49,33 @@ def poll_loop(interval, req, date=True, initial_values=True):
         if initial_values:
             json_print(output)
         output = json_flatten(output)
-    except Exception:
+    except (subprocess.CalledProcessError,
+            urllib2.HTTPError, ValueError) as e:
         print(traceback.format_exc(), file=sys.stderr)
     while True:
-        time.sleep(interval)
         try:
-            prev_output, output = output, json_flatten(req.perform())
-            diff = json_flat_diff(prev_output, output)
-            if diff is not None:
-                msg = json_diff_str(diff)
-                msg.sort()
-                # If msg is multi-line print each difference on a new line
-                # with indentation.
-                prefix = ''
-                if date:
-                    prefix += datetime.datetime.now().isoformat()
-                if len(msg) > 1:
-                    print(prefix, \
-                           "\n   ", "\n    ".join(msg))
-                else:
-                    print(prefix, msg[0])
-        except Exception:
-            print(traceback.format_exc(), file=sys.stderr)
+            time.sleep(interval)
+            try:
+                prev_output, output = output, json_flatten(req.perform())
+                diff = json_flat_diff(prev_output, output)
+                if diff is not None:
+                    msg = json_diff_str(diff)
+                    msg.sort()
+                    # If msg is multi-line print each difference on a new line
+                    # with indentation.
+                    prefix = ''
+                    if date:
+                        prefix += datetime.datetime.now().isoformat()
+                    if len(msg) > 1:
+                        print(prefix, \
+                              "\n   ", "\n    ".join(msg))
+                    else:
+                        print(prefix, msg[0])
+            except (subprocess.CalledProcessError,
+                    urllib2.HTTPError, ValueError) as e:
+                print(traceback.format_exc(), file=sys.stderr)
+        except KeyboardInterrupt:
+            sys.exit(0)
 
 
 def main():
