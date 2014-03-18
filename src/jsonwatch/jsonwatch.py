@@ -1,18 +1,11 @@
 #!/usr/bin/env python2
-# jsonwatch 0.1
+# jsonwatch
 # Copyright (c) 2014 Danyil Bohdan
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
+# This code is released under the MIT license. See the file LICENSE.
 
 from __future__ import print_function
+
+from jsondiff import json_flatten, json_flat_diff, json_diff_str
 
 import urllib2
 import argparse
@@ -22,7 +15,6 @@ import subprocess
 import time
 import datetime
 import traceback
-from jsondiff import json_flatten, json_flat_diff, json_diff_str
 
 
 class JSONRequestURL(object):

@@ -1,8 +1,10 @@
 from setuptools import setup
 
+execfile('src/jsonwatch/__init__.py')
+
 setup(
     name='jsonwatch',
-    version='0.1',
+    version=__version__,
     description='Track changes in JSON data.',
     url='http://github.com/dbohdan/jsonwatch',
     author='Danyil Bohdan',
@@ -10,6 +12,7 @@ setup(
     license='MIT',
     packages=['jsonwatch'],
     package_dir = {'': 'src'},
+    data_files=['LICENSE', 'README.md'],
     test_suite='jsonwatch.tests.suite',
     zip_safe=False,
     entry_points = {
