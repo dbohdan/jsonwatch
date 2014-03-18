@@ -45,7 +45,7 @@ def poll_loop(interval, req, date=True, initial_values=True):
         output = json_flatten(output)
     except Exception:
         #print(str(e))
-        print(traceback.format_exc())
+        print(traceback.format_exc(), file=sys.stderr)
     while True:
         time.sleep(interval)
         try:
@@ -65,7 +65,7 @@ def poll_loop(interval, req, date=True, initial_values=True):
                 else:
                     print(prefix, msg[0])
         except Exception:
-            print(traceback.format_exc())
+            print(traceback.format_exc(), file=sys.stderr)
             #print(str(e))
 
 
