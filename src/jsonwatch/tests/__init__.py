@@ -1,4 +1,15 @@
-# Copyright 2014 Danyil Bohdan
+# Copyright (c) 2014 Danyil Bohdan
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
 
 from __future__ import print_function
 
@@ -32,7 +43,8 @@ class JSONDiffTestCase(unittest.TestCase):
         u'temp_max': 277.45, u'temp': 276.45, u'temp_min': 276.15}, u'id'
         : 703448, u'wind': {u'speed': 10.27, u'deg': 245.507}, u'cod':
         200}
-        self.rec1 = {u'surface': {u'underground': {u'deeper': 'strange things'}}}
+        self.rec1 = {u'surface': {u'underground':
+                                 {u'deeper': 'strange things'}}}
 
     def test_flatten(self):
         self.assertEqual(json_flatten(self.rec1),

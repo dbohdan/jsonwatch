@@ -1,8 +1,31 @@
-# Copyright 2014 Danyil Bohdan
+# Copyright (c) 2014 Danyil Bohdan
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
 
 def json_flatten(a, prefix=''):
-    """Flatten a JSON structure into a dict."""
+    """Flatten a JSON structure into a dict with str paths as keys.
+
+    For example,
+    `json_flatten(json.loads('{"a": {"b": "v"}}'))` will return
+    `{'.a.b': u'v'}`;
+    `json_flatten(json.loads('{"a": [1, 2, 3]}'))` returns
+    `{'.a[0]': 1, '.a[2]': 3, '.a[1]': 2}`, etc.
+    """
+
     def add_flat(dict_, key, elem):
+        """If `elem` is itself a dict, merge it with `dict_`.
+        Otherwise, store it in `dict_` under `key`.
+        """
+
         if isinstance(elem, dict):
             dict_.update(elem)
         else:
@@ -16,12 +39,15 @@ def json_flatten(a, prefix=''):
     elif isinstance(a, dict):
         for key in a.keys():
             new_prefix = prefix
-            # Account for possible spaces in keys.
+            # Use a different syntax for keys with spaces.
             if ' ' in key:
                 new_prefix += "['{0}']".format(key)
             else:
                 new_prefix += ".{0}".format(key)
             add_flat(res, prefix, json_flatten(a[key], new_prefix))
+    # If a is not processable by json_flatten (e.g., it's a str) then store
+    # it in res. However, at the top level we don't want to store such an a
+    # as {'': a}. We also don't store None in res; we return it instead.
     elif a is not None and prefix != '':
         res[prefix] = a
     else:
@@ -39,6 +65,8 @@ def c_keys(a, b):
 
 
 def remove_none_values(dict_):
+    """Remove from `dict_` key-value pairs where the values are `None`."""
+
     res = {}
     res.update((key, value) for key, value in dict_.iteritems() \
                 if value is not None)
@@ -46,6 +74,20 @@ def remove_none_values(dict_):
 
 
 def json_flat_diff(a, b):
+    """Compute the difference between two dicts that contain 'flattened' JSON.
+
+    'Flat' in 'flat diff' means no attempt is made to compute changes
+    recursively if there are nested structures. The function assumes you've
+    run your input (`a` and `b`) through `json_flatten` first if needed.
+
+    The function returns a tuple of two dicts (`res_a`, `res_b`) where both
+    dicts have the same set of keys that corresponds to the where the values
+    in `a` and `b` differ. If `a[k]` is the same as `b[k]` then `k` won't be
+    present in `res_a` and `res_b`. If `a` has the key `k` and b doesn't
+    `res_a[k]` will have the same value as `a[k]` while `res_b[k]` will be
+    `None`.
+    """
+
     res_a = {}
     res_b = {}
     for key in set(a.keys()).union(set(b.keys())):
@@ -54,11 +96,13 @@ def json_flat_diff(a, b):
         if a_value != b_value:
             res_a[key] = a_value
             res_b[key] = b_value
-    # Mind the parenthesis below lest you return ({}, None).
+    # Mind the parentheses below lest you return ({}, None) if res_a is None.
     return (res_a, res_b) if res_a != {} else None
 
 
 def json_diff_str(diff):
+    """Format a diff for human reading. Retuns a list or strs."""
+
     res = []
     flat_diff_from, flat_diff_to = diff
     flat_diff_from = remove_none_values(flat_diff_from)

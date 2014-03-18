@@ -1,6 +1,16 @@
 #!/usr/bin/env python2
-# jsonwatch 0.1.0
-# Copyright 2014 Danyil Bohdan
+# jsonwatch 0.1
+# Copyright (c) 2014 Danyil Bohdan
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 from __future__ import print_function
 
@@ -16,6 +26,7 @@ from jsondiff import json_flatten, json_flat_diff, json_diff_str
 
 
 class JSONRequestURL(object):
+    """Abstracts away requests for JSON data from URLs."""
     def __init__(self, url):
         self.url = url
 
@@ -24,6 +35,7 @@ class JSONRequestURL(object):
 
 
 class JSONRequestCommand(object):
+    """Abstracts away requests for JSON data from shell commands."""
     def __init__(self, command):
         self.command = command
 
@@ -36,6 +48,8 @@ def json_print(jsn):
 
 
 def poll_loop(interval, req, date=True, initial_values=True):
+    """Perform requests for JSON data. Print out changes when they occur."""
+
     prev_output = None
     output = None
     try:
@@ -44,7 +58,6 @@ def poll_loop(interval, req, date=True, initial_values=True):
             json_print(output)
         output = json_flatten(output)
     except Exception:
-        #print(str(e))
         print(traceback.format_exc(), file=sys.stderr)
     while True:
         time.sleep(interval)
@@ -66,7 +79,6 @@ def poll_loop(interval, req, date=True, initial_values=True):
                     print(prefix, msg[0])
         except Exception:
             print(traceback.format_exc(), file=sys.stderr)
-            #print(str(e))
 
 
 def main():
