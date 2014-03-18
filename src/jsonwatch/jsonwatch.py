@@ -87,7 +87,7 @@ def main():
                         default='', required=False, metavar='command',
                         dest='command')
     parser.add_argument('-n', '--interval', help='interval',
-                        default=5, type=int, required=False,
+                        default=None, type=int, required=False,
                         metavar='seconds', dest='interval')
     parser.add_argument('--no-date',
                         help='don\'t print date and time for each diff',
@@ -107,8 +107,12 @@ def main():
 
     req = None
     if args.url != '':
+        if args.interval is None:
+            args.interval = 60
         req = JSONRequestURL(args.url)
     else:
+        if args.interval is None:
+            args.interval = 5
         req = JSONRequestCommand(args.command)
     poll_loop(args.interval, req, args.print_date, args.print_init_val)
 
