@@ -1,6 +1,6 @@
 from setuptools import setup
 
-execfile('src/jsonwatch/__init__.py')
+execfile('jsonwatch/__init__.py')
 
 setup(
     name='jsonwatch',
@@ -11,11 +11,11 @@ setup(
     author_email='danyil.bohdan@gmail.com',
     license='MIT',
     packages=['jsonwatch'],
-    package_dir = {'': 'src'},
-    data_files=['LICENSE', 'README.md'],
+    package_dir='',
+    data_files=[('', ['LICENSE', 'README.md'])],
     test_suite='jsonwatch.tests.suite',
     zip_safe=False,
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'jsonwatch = jsonwatch.jsonwatch:main',
         ],
