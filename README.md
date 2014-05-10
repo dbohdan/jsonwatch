@@ -10,7 +10,7 @@ Installation
 
 The following instructions cover installing `jsonwatch` with Python 2.7.
 
-1. Install Setuptools for Python. On Debian and Ubuntu you can do this with
+1\. Install Setuptools for Python. On Debian and Ubuntu you can do this with
 
     sudo apt-get install python-setuptools
 
@@ -19,7 +19,7 @@ On Fedora do
     su -
     yum install python-setuptools
 
-2. Clone the repository then run
+2\. Clone the repository then run
 
     sudo python setup.py install
 
