@@ -5,9 +5,9 @@
 
 from __future__ import print_function
 
-from jsondiff import json_flatten, json_flat_diff, json_diff_str
+from jsonwatch.jsondiff import json_flatten, json_flat_diff, json_diff_str
 
-import urllib2
+import six.moves.urllib as urllib
 import argparse
 import json
 import sys
@@ -21,13 +21,13 @@ class JSONRequestURL(object):
     """Abstracts away requests for JSON data from URLs."""
     def __init__(self, url):
         self.url = url
-        self.opener = urllib2.build_opener()
+        self.opener = urllib.request.build_opener()
         # User agent needed for some APIs that decide whether to feed
         # you JSON data or a webpage/error 403 based on it.
         self.opener.addheaders = [('User-agent', 'curl')]
 
     def perform(self):
-        return json.loads(self.opener.open(self.url).read())
+        return json.loads(self.opener.open(self.url).read().decode("utf-8"))
 
 
 class JSONRequestCommand(object):
@@ -54,7 +54,8 @@ def poll_loop(interval, req, date=True, initial_values=True):
             json_print(output)
         output = json_flatten(output)
     except (subprocess.CalledProcessError,
-            urllib2.HTTPError, ValueError) as e:
+            urllib.error.HTTPError,
+            ValueError) as e:
         print(traceback.format_exc(), file=sys.stderr)
     while True:
         try:
@@ -76,7 +77,8 @@ def poll_loop(interval, req, date=True, initial_values=True):
                     else:
                         print(prefix, msg[0])
             except (subprocess.CalledProcessError,
-                    urllib2.HTTPError, ValueError) as e:
+                    urllib.HTTPError,
+                    ValueError) as e:
                 print(traceback.format_exc(), file=sys.stderr)
         except KeyboardInterrupt:
             sys.exit(0)

@@ -47,6 +47,7 @@ def json_flatten(a, prefix=''):
 
 
 def c_keys(a, b):
+    """Returns the keys that the dicts a and b have in common."""
     a_keys = set(a.keys())
     b_keys = set(b.keys())
     common_keys = a_keys.intersection(b_keys)
@@ -91,7 +92,7 @@ def json_flat_diff(a, b):
 
 
 def json_diff_str(diff):
-    """Format a diff for human reading. Retuns a list or strs."""
+    """Format a diff for human reading. Retuns a list of strs."""
 
     res = []
     flat_diff_from, flat_diff_to = diff

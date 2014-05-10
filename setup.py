@@ -1,10 +1,16 @@
+from ast import literal_eval
 from setuptools import setup
 
-execfile('jsonwatch/__init__.py')
+# Get package information, including version, from jsonwatch/__init__.py.
+with open("jsonwatch/__init__.py") as f:
+    lns = [s.strip().split(' = ') for s in f.readlines()]
+    # Safely evaluate right-hand side values and put package info into a dict.
+    package_info = dict([(elem[0], literal_eval(elem[1])) for elem in lns
+                         if len(elem) == 2])
 
 setup(
     name='jsonwatch',
-    version=__version__,
+    version=package_info['__version__'],
     description='Track changes in JSON data.',
     url='http://github.com/dbohdan/jsonwatch',
     author='Danyil Bohdan',
@@ -15,6 +21,7 @@ setup(
     data_files=[('', ['LICENSE', 'README.md'])],
     test_suite='jsonwatch.tests.suite',
     zip_safe=False,
+    install_requires=['six'],
     entry_points={
         'console_scripts': [
             'jsonwatch = jsonwatch.jsonwatch:main',
