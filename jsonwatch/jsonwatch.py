@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 
-from jsonwatch.jsondiff import json_flatten, json_flat_diff, json_diff_str
+from jsondiff import json_flatten, json_flat_diff, json_diff_str
 
 import six.moves.urllib as urllib
 import argparse

@@ -2,7 +2,7 @@
 # This code is released under the MIT license. See the file LICENSE.
 
 __title__ = 'jsonwatch'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 __author__ = 'Danyil Bohdan'
 __license__ = 'MIT'
 __copyright__ = 'Copyright (c) 2014 Danyil Bohdan'
