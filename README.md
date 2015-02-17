@@ -1,6 +1,8 @@
 jsonwatch — like watch -d but for JSON
 ======================================
 
+[![Build Status](https://travis-ci.org/dbohdan/jsonwatch.svg?branch=master)](https://travis-ci.org/dbohdan/jsonwatch)
+
 `jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes. It is similar but not isomorphic in its behavior to how [watch(1)](http://manpages.debian.org/cgi-bin/man.cgi?query=watch&apropos=0&sektion=0&manpath=Debian+7.0+wheezy&format=html&locale=en) with the `-d` switch works for plain-text data.
 
 `jsonwatch` requires Python 2.7 or 3.x. It has been tested on Debian 7, Ubuntu 12.04 and Fedora 20.
