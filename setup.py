@@ -8,6 +8,10 @@ with open("jsonwatch/__init__.py") as f:
     package_info = dict([(elem[0], literal_eval(elem[1])) for elem in lns
                          if len(elem) == 2])
 
+# Get requirements.
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='jsonwatch',
     version=package_info['__version__'],
@@ -21,7 +25,7 @@ setup(
     data_files=[('', ['LICENSE', 'README.md'])],
     test_suite='jsonwatch.tests.suite',
     zip_safe=False,
-    install_requires=['six'],
+    install_requires=requirements,
     entry_points={
         'console_scripts': [
             'jsonwatch = jsonwatch.jsonwatch:main',
