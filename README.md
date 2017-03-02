@@ -3,29 +3,42 @@ jsonwatch — like watch -d but for JSON
 
 [![Build Status](https://travis-ci.org/dbohdan/jsonwatch.svg?branch=master)](https://travis-ci.org/dbohdan/jsonwatch)
 
-`jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes. It is similar but not isomorphic in its behavior to how [watch(1)](http://manpages.debian.org/cgi-bin/man.cgi?query=watch&apropos=0&sektion=0&manpath=Debian+7.0+wheezy&format=html&locale=en) with the `-d` switch works for plain-text data.
+`jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes. It is similar but not isomorphic in its behavior to how [watch(1)](https://manpages.debian.org/jessie/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
 
-`jsonwatch` requires Python 2.7 or 3.x. It has been tested on Debian 7, Ubuntu 12.04 and Fedora 20.
+It has been tested on FreeBSD 11.0-RELEASE, Debian 8, Ubuntu 16.04 and Windows 10.
+
+The previous version of `jsonwatch` written in Python is preserved in the branch [`python`](https://github.com/dbohdan/jsonwatch/tree/python).
+
 
 Installation
 ============
 
-The following instructions cover installing `jsonwatch` with Python 2.7.
+Prebuilt Linux and Windows binaries are available. They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
 
-1\. Install Setuptools for Python. On Debian and Ubuntu you can do this with
+Building normally
+-----------------
 
-    sudo apt-get install python-setuptools
+To build `jsonwatch` from the source on FreeBSD, a Linux distribution or Windows follow the instructions below.
 
-On Fedora do
+1\. Install the [Haskell Stack](https://haskell-lang.org/get-started) and Git.
 
-    su -
-    yum install python-setuptools
+2\. Clone this repository. Build and install the binary.
 
-2\. Clone the repository then run
+    git clone https://github.com/dbohdan/jsonwatch
+    cd jsonwatch
+    stack test
+    stack install
 
-    sudo python setup.py install
+Building a static binary for Linux
+----------------------------------
 
-The command `jsonwatch` will be installed.
+You will need [Docker](https://www.docker.com/). Clone this repository and in it run
+
+    docker build --no-cache=true --tag jsonwatch/latest .
+    docker run jsonwatch/latest cat /usr/local/bin/jsonwatch > jsonwatch-static
+    # Cleanup.
+    docker ps -all --quiet --filter=ancestor=jsonwatch/latest | xargs docker rm
+    docker rmi jsonwatch/latest
 
 Use examples
 ============
@@ -76,6 +89,7 @@ Weather tracking.
 Geolocation. (Try this on a mobile device.)
 
     $ jsonwatch -u http://freegeoip.net/json/ --no-initial-values -n 300
+
 
 License
 =======

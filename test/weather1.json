@@ -1,0 +1,11 @@
+{"clouds": {"all": 92}, "name": "Kiev", "coord": {
+"lat": 50.43, "lon": 30.52}, "sys": {"country": "UA",
+"message": 0.0051, "sunset": 1394985874, "sunrise": 1394942901
+}, "weather": [{"main": "Snow", "id": 612, "icon": "13d",
+"description": "light shower sleet"}, {"main": "Rain", "id":
+520, "icon": "09d", "description": "light intensity shower rain"}],
+"rain": {"3h": 2}, "base": "cmc stations", "dt":
+1394979003, "main": {"pressure": 974.8229, "humidity": 91,
+"temp_max": 277.45, "temp": 276.45, "temp_min": 276.15}, "id"
+: 703448, "wind": {"speed": 10.27, "deg": 245.507}, "cod":
+200}

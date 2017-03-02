@@ -1,6 +1,2 @@
-*.pyc
-/dist/
-/build/
-/*.egg-info
-*/*.egg-info
-/py?env*/
+/.stack-work
+*.sublime-*
