@@ -98,6 +98,8 @@ On Windows `-c` executes `cmd.exe` commands.
 URLs
 ----
 
+Watching a URL works identically on *nix and on Windows.
+
 Weather tracking.
 
     $ jsonwatch -u http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua --no-initial-values -n 300
