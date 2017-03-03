@@ -36,6 +36,10 @@ spec = do
                              "strange things")]
             (decodeToFlatJsonList v) `shouldBe` expected
 
+        it "formats numbers using standard decimal notation" $ do
+            [decodeToFlatJsonList x | x <- ["1000000000", "0.00000001"]]
+                `shouldBe` [[("", "1000000000.0")], [("", "0.00000001")]]
+
     describe "Diff.diff" $ do
         it "can diff nested values" $ do
             -- Based on data from

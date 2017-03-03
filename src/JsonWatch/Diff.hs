@@ -6,6 +6,7 @@ module JsonWatch.Diff (FlatJson, DiffMap, Diff, diff, flatten, formatDiff) where
 
 import qualified Data.Aeson as A
 import qualified Data.HashMap.Strict as HM
+import qualified Data.Scientific as S
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -31,7 +32,7 @@ formatDiff (fromOnly, both, toOnly) =
 
 flatten :: Text -> A.Value -> FlatJson
 flatten prefix (A.Number x) =
-    HM.singleton prefix (T.pack $ show x)
+    HM.singleton prefix (T.pack $ S.formatScientific S.Fixed Nothing x)
 flatten prefix (A.String x) =
     HM.singleton prefix x
 flatten prefix (A.Bool True) =
