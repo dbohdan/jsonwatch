@@ -40,11 +40,14 @@ You will need [Docker](https://www.docker.com/). Clone this repository and in it
     docker ps -all --quiet --filter=ancestor=jsonwatch/latest | xargs docker rm
     docker rmi jsonwatch/latest
 
+
 Use examples
 ============
 
 Commands
 --------
+
+### *nix
 
 Testing `jsonwatch`.
 
@@ -69,6 +72,28 @@ Cryptocurrency daemon information (including balance changes).
         .difficulty: 1316.42722979 -> 1178.89009968
     2014-03-18T14:19:13.921734 .connections: 8 -> 7
     2014-03-18T14:19:39.128119 .connections: 7 -> 8
+
+### Windows
+
+On Windows `-c` executes `cmd.exe` commands.
+
+    > jsonwatch -c "type test\weather1.json"
+
+    {"clouds": {"all": 92}, "name": "Kiev", "coord": {
+    "lat": 50.43, "lon": 30.52}, "sys": {"country": "UA",
+    "message": 0.0051, "sunset": 1394985874, "sunrise": 1394942901
+    }, "weather": [{"main": "Snow", "id": 612, "icon": "13d",
+    "description": "light shower sleet"}, {"main": "Rain", "id":
+    520, "icon": "09d", "description": "light intensity shower rain"}],
+    "rain": {"3h": 2}, "base": "cmc stations", "dt":
+    1394979003, "main": {"pressure": 974.8229, "humidity": 91,
+    "temp_max": 277.45, "temp": 276.45, "temp_min": 276.15}, "id"
+    : 703448, "wind": {"speed": 10.27, "deg": 245.507}, "cod":
+    200}
+
+    2017-03-02T16:58:08+0200 + .test: true
+    2017-03-02T17:00:52+0200 .test: true -> false
+    2017-03-02T17:01:04+0200 - .test: false
 
 URLs
 ----
