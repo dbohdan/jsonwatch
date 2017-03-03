@@ -37,7 +37,7 @@ You will need [Docker](https://www.docker.com/). Clone this repository and in it
     docker build --no-cache=true --tag jsonwatch/latest .
     docker run jsonwatch/latest cat /usr/local/bin/jsonwatch > jsonwatch-static
     # Cleanup.
-    docker ps -all --quiet --filter=ancestor=jsonwatch/latest | xargs docker rm
+    docker ps --all --quiet --filter=ancestor=jsonwatch/latest | xargs docker rm
     docker rmi jsonwatch/latest
 
 
