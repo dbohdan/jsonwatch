@@ -18,9 +18,6 @@ import Data.Text as T
 
 timeFormat = "%Y-%m-%dT%H:%M:%S%z"
 
-decodeString :: String -> A.Value
-decodeString s = fromMaybe (A.toJSON ()) $ A.decode $ C8.pack s
-
 timestamp :: IO String
 timestamp = do
     now <- getZonedTime
@@ -43,8 +40,12 @@ printDiff True lines = do
 watch :: Int -> Bool -> Bool -> Maybe JD.FlatJson -> IO String -> IO ()
 watch interval date print prev thunk = do
     jsonStr <- thunk
-    when print $ Prelude.putStrLn jsonStr
-    let jsonFlat = JD.flatten "" $ decodeString jsonStr
+    let decoded = A.decode $ C8.pack jsonStr
+    -- Only print valid JSON.
+    case decoded of
+        Just value -> when print $ Prelude.putStrLn jsonStr
+        Nothing    -> return ()
+    let jsonFlat = JD.flatten "" $ fromMaybe (A.toJSON ()) decoded
     case prev of
         Just prevFlat -> printDiff date $ JD.formatDiff $
                          JD.diff prevFlat jsonFlat
