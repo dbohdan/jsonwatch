@@ -42,13 +42,14 @@ spec = do
             -- http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua.
             v1 <- readFile "test/weather1.json"
             v2 <- readFile "test/weather2.json"
-            let (m1, m2, m3) = JD.diff (JD.flatten "" $ decodeText $ T.pack v1)
-                                       (JD.flatten "" $ decodeText $ T.pack v2)
-            (HM.toList m1, HM.toList m2, HM.toList m3) `shouldBe` ([
-                (".weather.1.id", "520.0"),
-                (".weather.1.description", "light intensity shower rain"),
-                (".weather.1.main", "Rain"),
-                (".weather.1.icon", "09d")], [(".name",("Kiev","Kyiv"))], [])
+            let diff = JD.diff (JD.flatten "" $ decodeText $ T.pack v1)
+                               (JD.flatten "" $ decodeText $ T.pack v2)
+            diff `shouldBe` (HM.fromList
+                [ (".weather.1.id", "520.0")
+                , (".weather.1.description", "light intensity shower rain")
+                , (".weather.1.main", "Rain"),
+                (".weather.1.icon", "09d")],
+                HM.fromList [(".name", ("Kiev", "Kyiv"))], HM.empty)
 
     describe "Diff.formatDiff" $ do
         it "can format Diffs" $ do
