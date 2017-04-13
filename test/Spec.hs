@@ -52,10 +52,13 @@ spec = do
             diff
                 `shouldBe` (HM.fromList
                                [ (".weather.1.id", "520.0")
-                               , (".weather.1.description", "light intensity shower rain")
+                               , (".weather.1.description",
+                                  "light intensity shower rain")
                                , (".weather.1.main", "Rain")
                                , (".weather.1.icon", "09d")
-                               ], HM.fromList [(".name", ("Kiev", "Kyiv"))], HM.empty)
+                               ],
+                               HM.fromList [(".name", ("Kiev", "Kyiv"))],
+                               HM.empty)
 
     describe "Diff.formatDiff" $ do
         it "can format Diffs" $ do

@@ -14,14 +14,14 @@ import           Options.Applicative
 import qualified System.Process             as P
 
 data Source
-  = Command String
-  | Url String deriving Show
+    = Command String
+    | Url String deriving Show
 
 data WatchOpts = WatchOpts
-  { source          :: Source
-  , interval        :: Int
-  , noDate          :: Bool
-  , noInitialValues :: Bool } deriving Show
+    { source          :: Source
+    , interval        :: Int
+    , noDate          :: Bool
+    , noInitialValues :: Bool } deriving Show
 
 commandSourceOpt :: Parser Source
 commandSourceOpt = Command <$> strOption
@@ -63,12 +63,12 @@ watchOpts =
 
 main :: IO ()
 main = start =<< execParser opts
- where
-  opts = info
-      (watchOpts <**> helper)
-      ( fullDesc <> progDesc "Track changes in JSON data" <> header
-          "jsonwatch v0.3.0"
-      )
+  where
+    opts = info
+        (watchOpts <**> helper)
+        ( fullDesc <> progDesc "Track changes in JSON data" <> header
+            "jsonwatch v0.3.0"
+        )
 
 httpGet :: String -> IO String
 httpGet url = do
@@ -80,7 +80,7 @@ httpGet url = do
 start :: WatchOpts -> IO ()
 start (WatchOpts source interval noDate noInitialValues) =
     JW.watch interval (not noDate) (not noInitialValues) Nothing thunk
- where
-  thunk = case source of
-      Command command -> P.readCreateProcess (P.shell command) ""
-      Url     url     -> httpGet url
+  where
+    thunk = case source of
+        Command command -> P.readCreateProcess (P.shell command) ""
+        Url     url     -> httpGet url

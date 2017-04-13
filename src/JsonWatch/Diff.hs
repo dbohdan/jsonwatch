@@ -17,11 +17,11 @@ type Diff = (FlatJson, DiffMap, FlatJson)
 
 diff :: FlatJson -> FlatJson -> Diff
 diff from to = (fromOnly, both, toOnly)
- where
-  fromOnly = HM.difference from to
-  toOnly   = HM.difference to from
-  both     = HM.mapMaybe id $ HM.intersectionWith f from to
-  f        = \v1 v2 -> if (v1 :: Text) == v2 then Nothing else Just (v1, v2)
+  where
+    fromOnly = HM.difference from to
+    toOnly   = HM.difference to from
+    both     = HM.mapMaybe id $ HM.intersectionWith f from to
+    f        = \v1 v2 -> if (v1 :: Text) == v2 then Nothing else Just (v1, v2)
 
 formatDiff :: Diff -> [Text]
 formatDiff (fromOnly, both, toOnly) =
@@ -44,6 +44,7 @@ flatten prefix (A.Array xs) = HM.unions
     ]
 
 mergePath :: Text -> Text -> Text
-mergePath a b = case T.find (\c -> c == ' ') b of -- TODO: Detect other whitespace?
+-- TODO: Detect other whitespace?
+mergePath a b = case T.find (\c -> c == ' ') b of
     Just _  -> T.concat [a, "['", b, "']"] -- Doesn't escape "'" in b.
     Nothing -> T.concat [a, ".", b]
