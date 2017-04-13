@@ -4,16 +4,16 @@
 
 module JsonWatch.Watch (watch) where
 
-import           JsonWatch.Diff             as JD
+import qualified JsonWatch.Diff             as JD
 
 import           Control.Concurrent         (threadDelay)
 import           Control.Monad              (when)
-import           Data.Aeson                 as A
-import           Data.ByteString.Lazy.Char8 as C8
+import qualified Data.Aeson                 as A
+import qualified Data.ByteString.Lazy.Char8 as C8
 import           Data.Maybe                 (fromMaybe)
-import           Data.Text                  as T
+import qualified Data.Text                  as T
 import           Data.Time.Clock            (getCurrentTime)
-import           Data.Time.Format           as F
+import qualified Data.Time.Format           as F
 import           Data.Time.LocalTime        (getZonedTime)
 
 timeFormat = "%Y-%m-%dT%H:%M:%S%z"
@@ -23,7 +23,7 @@ timestamp = do
     now <- getZonedTime
     return $ F.formatTime F.defaultTimeLocale timeFormat now
 
-printDiff :: Bool -> [Text] -> IO ()
+printDiff :: Bool -> [T.Text] -> IO ()
 printDiff _     []     = return ()
 printDiff False [line] = do
     Prelude.putStrLn $ T.unpack line

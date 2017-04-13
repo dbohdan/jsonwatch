@@ -4,14 +4,14 @@
 
 module Main where
 
-import           JsonWatch.Watch            as JW
+import qualified JsonWatch.Watch            as JW
 
-import           Data.ByteString.Lazy.Char8 as C8
+import qualified Data.ByteString.Lazy.Char8 as C8
 import           Data.Semigroup             ((<>))
-import           Network.HTTP.Client        as HC
-import           Network.HTTP.Client.TLS    as HCT
+import qualified Network.HTTP.Client        as HC
+import qualified Network.HTTP.Client.TLS    as HCT
 import           Options.Applicative
-import           System.Process             as P
+import qualified System.Process             as P
 
 data Source
   = Command String
@@ -75,7 +75,7 @@ httpGet url = do
     manager  <- HC.newManager HCT.tlsManagerSettings
     request  <- HC.parseRequest url
     response <- HC.httpLbs request manager
-    return $ C8.unpack $ responseBody response
+    return $ C8.unpack $ HC.responseBody response
 
 start :: WatchOpts -> IO ()
 start (WatchOpts source interval noDate noInitialValues) =
