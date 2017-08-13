@@ -39,9 +39,15 @@ formatDiff (fromOnly, both, toOnly) =
     | (k, v) <- toAscList toOnly
     ]
 
+formatNumber :: S.Scientific -> Text
+formatNumber x =
+    T.pack $ S.formatScientific S.Fixed
+                                (if S.isInteger x then Just 0 else Nothing)
+                                x
+
 flatten :: JP.Path -> A.Value -> FlatJson
 flatten prefix (A.Number x) =
-    M.singleton prefix (T.pack $ S.formatScientific S.Fixed Nothing x)
+    M.singleton prefix $ formatNumber x
 flatten prefix (A.String x    ) = M.singleton prefix x
 flatten prefix (A.Bool   True ) = M.singleton prefix "true"
 flatten prefix (A.Bool   False) = M.singleton prefix "false"

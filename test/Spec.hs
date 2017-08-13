@@ -25,7 +25,7 @@ spec :: Spec
 spec = do
     describe "Diff.flatten" $ do
         it "can decode simple values" $ do
-            let values = ["5.0", "\"foo\"", "true", "false", "null"]
+            let values = ["5", "\"foo\"", "true", "false", "null"]
             let expected =
                     [ [(JP.empty,
                         T.dropAround (\x -> x == '"') x)] | x <- values ]
@@ -43,7 +43,7 @@ spec = do
 
         it "formats numbers using standard decimal notation" $ do
             [ decodeToFlatJsonList x | x <- ["1000000000", "0.00000001"] ]
-                `shouldBe` [[(JP.empty, "1000000000.0")],
+                `shouldBe` [[(JP.empty, "1000000000")],
                             [(JP.empty, "0.00000001")]]
 
     describe "Diff.diff" $ do
@@ -56,7 +56,7 @@ spec = do
                                (JD.flatten JP.empty $ decodeText $ T.pack v2)
             let weather1 = JP.addInt 1 $ JP.addText "weather" $ JP.empty
             diff `shouldBe` (M.fromList
-                               [ (JP.addText "id" weather1, "520.0")
+                               [ (JP.addText "id" weather1, "520")
                                , (JP.addText "description" weather1,
                                   "light intensity shower rain")
                                , (JP.addText "main" weather1, "Rain")
@@ -80,8 +80,8 @@ spec = do
                 \[1, {\"deep\": \"sp@ce\"}]}, \"R\": 1}"
             let expectedDiff =
                     [ ".k2['nested key'].1.deep: space -> sp@ce"
-                    , "- .L: 0.0"
-                    , "+ .R: 1.0"
+                    , "- .L: 0"
+                    , "+ .R: 1"
                     ]
             JD.formatDiff (JD.diff (JD.flatten JP.empty v1)
                                    (JD.flatten JP.empty v2))
