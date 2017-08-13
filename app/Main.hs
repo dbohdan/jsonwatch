@@ -67,7 +67,7 @@ main = start =<< execParser opts
     opts = info
         (watchOpts <**> helper)
         ( fullDesc <> progDesc "Track changes in JSON data" <> header
-            "jsonwatch v0.3.0"
+            "jsonwatch v0.3.1"
         )
 
 httpGet :: String -> IO String

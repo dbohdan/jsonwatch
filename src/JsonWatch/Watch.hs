@@ -5,6 +5,7 @@
 module JsonWatch.Watch (watch) where
 
 import qualified JsonWatch.Diff             as JD
+import qualified JsonWatch.Path             as JP
 
 import           Control.Concurrent         (threadDelay)
 import           Control.Monad              (when)
@@ -45,7 +46,7 @@ watch interval date print prev thunk = do
     case decoded of
         Just value -> when print $ Prelude.putStrLn jsonStr
         Nothing    -> return ()
-    let jsonFlat = JD.flatten "" $ fromMaybe (A.toJSON ()) decoded
+    let jsonFlat = JD.flatten JP.empty $ fromMaybe (A.toJSON ()) decoded
     case prev of
         Just prevFlat ->
             printDiff date $ JD.formatDiff $ JD.diff prevFlat jsonFlat
