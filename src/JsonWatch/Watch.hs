@@ -10,6 +10,7 @@ import qualified JsonWatch.Path             as JP
 import           Control.Concurrent         (threadDelay)
 import           Control.Monad              (when)
 import qualified Data.Aeson                 as A
+import qualified Data.Aeson.Encode.Pretty   as AP
 import qualified Data.ByteString.Lazy.Char8 as C8
 import           Data.Maybe                 (fromMaybe)
 import qualified Data.Text                  as T
@@ -44,7 +45,7 @@ watch interval date print prev thunk = do
     let decoded = A.decode $ C8.pack jsonStr
     -- Only print valid JSON.
     case decoded of
-        Just value -> when print $ Prelude.putStrLn jsonStr
+        Just value -> when print $ C8.putStrLn $ AP.encodePretty decoded
         Nothing    -> return ()
     let jsonFlat = JD.flatten JP.empty $ fromMaybe (A.toJSON ()) decoded
     case prev of
