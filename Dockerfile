@@ -1,14 +1,15 @@
 # Based on
 # https://www.fpcomplete.com/blog/2016/10/static-compilation-with-stack
 
-FROM alpine:latest
+FROM alpine:3.6
 
-RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing \
+RUN echo http://dl-cdn.alpinelinux.org/alpine/v3.6/community \
          >> /etc/apk/repositories
 RUN apk update
-RUN apk add alpine-sdk ghc@testing gmp-dev libffi-dev zlib-dev
+RUN apk add alpine-sdk ghc gmp-dev libffi-dev zlib-dev
 
-ADD https://s3.amazonaws.com/static-stack/stack-1.1.2-x86_64 /usr/local/bin/stack
+ADD https://s3.amazonaws.com/static-stack/stack-1.1.2-x86_64 \
+    /usr/local/bin/stack
 RUN chmod 755 /usr/local/bin/stack
 
 ADD ./ /usr/src/jsonwatch
