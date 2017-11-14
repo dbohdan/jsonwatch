@@ -34,28 +34,29 @@ Building a static binary for Linux
 
 You will need [Docker](https://www.docker.com/). Clone this repository and in it run
 
-    # First build only. Create a volume to cache compiled build dependencies.
-    docker volume create jsonwatch-stack-dir
-    # Every build. Build a static binary of jsonwatch.
-    docker build --tag jsonwatch .
-    docker run --name jsonwatch-build \
-               --mount source=jsonwatch-stack-dir,target=/root/.stack \
-               jsonwatch \
-               stack --local-bin-path /usr/local/bin \
-                     --install-ghc install \
-                     --test \
-                     --ghc-options='-optl-static -optl-pthread'
-    docker cp jsonwatch-build:/usr/local/bin/jsonwatch jsonwatch-static
-    # Every build. Clean up the containers after a build. This includes the
-    # containers from any failed builds.
-    docker ps --all --quiet --filter=ancestor=jsonwatch | xargs docker rm
-    # Last build only. Remove the volume and the image. Do this to free up disk
-    # space (circa 2 GB total) once you do not expect to build jsonwatch again
-    # soon. Note that building will take considerably longer if you have to
-    # recreate the volume.
-    docker rmi jsonwatch
-    docker volume rm jsonwatch-stack-dir
-
+```sh
+# First build only. Create a volume to cache compiled build dependencies.
+docker volume create jsonwatch-stack-dir
+# Every build. Build a static binary of jsonwatch.
+docker build --tag jsonwatch .
+docker run --name jsonwatch-build \
+           --mount source=jsonwatch-stack-dir,target=/root/.stack \
+           jsonwatch \
+           stack --local-bin-path /usr/local/bin \
+                 --install-ghc install \
+                 --test \
+                 --ghc-options='-optl-static -optl-pthread'
+docker cp jsonwatch-build:/usr/local/bin/jsonwatch jsonwatch-static
+# Every build. Clean up the containers after a build. This includes the
+# containers from any failed builds.
+docker ps --all --quiet --filter=ancestor=jsonwatch | xargs docker rm
+# Last build only. Remove the volume and the image. Do this to free up disk
+# space (circa 2 GB total) once you do not expect to build jsonwatch again
+# soon. Note that building will take considerably longer if you have to
+# recreate the volume.
+docker rmi jsonwatch
+docker volume rm jsonwatch-stack-dir
+```
 
 Use examples
 ============
