@@ -19,5 +19,3 @@ RUN chmod 755 /usr/local/bin/stack
 
 ADD ./ /usr/src/jsonwatch
 WORKDIR /usr/src/jsonwatch
-RUN stack --local-bin-path /usr/local/bin --install-ghc \
-          install --test --ghc-options='-optl-static -optl-pthread'
