@@ -83,9 +83,9 @@ start (WatchOpts source interval noDate noInitialValues) =
     JW.watch interval (not noDate) (not noInitialValues) Nothing thunk
   where
     thunk = case source of
-        Command command -> readShellCommand command ""
+        Command command -> readShellCommand command
         Url url -> httpGet url
-    readShellCommand command input = do
+    readShellCommand command = do
         let cProc = (P.shell command) { P.std_out = P.CreatePipe }
         (_, Just hOut, _, _) <- P.createProcess cProc
         BS.hGetContents hOut
