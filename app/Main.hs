@@ -6,7 +6,8 @@ module Main where
 
 import qualified JsonWatch.Watch            as JW
 
-import qualified Data.ByteString.Lazy.Char8 as C8
+import qualified Data.ByteString.Lazy       as BS
+import qualified Data.ByteString.Lazy.UTF8  as UTF8
 import           Data.Semigroup             ((<>))
 import qualified Network.HTTP.Client        as HC
 import qualified Network.HTTP.Client.TLS    as HCT
@@ -67,20 +68,24 @@ main = start =<< execParser opts
     opts = info
         (watchOpts <**> helper)
         ( fullDesc <> progDesc "Track changes in JSON data" <> header
-            "jsonwatch v0.3.1"
+            "jsonwatch v0.3.2"
         )
 
-httpGet :: String -> IO String
+httpGet :: String -> IO BS.ByteString
 httpGet url = do
     manager  <- HC.newManager HCT.tlsManagerSettings
     request  <- HC.parseRequest url
     response <- HC.httpLbs request manager
-    return $ C8.unpack $ HC.responseBody response
+    return $ HC.responseBody response
 
 start :: WatchOpts -> IO ()
 start (WatchOpts source interval noDate noInitialValues) =
     JW.watch interval (not noDate) (not noInitialValues) Nothing thunk
   where
     thunk = case source of
-        Command command -> P.readCreateProcess (P.shell command) ""
-        Url     url     -> httpGet url
+        Command command -> readShellCommand command ""
+        Url url -> httpGet url
+    readShellCommand command input = do
+        let cProc = (P.shell command) { P.std_out = P.CreatePipe }
+        (_, Just hOut, _, _) <- P.createProcess cProc
+        BS.hGetContents hOut

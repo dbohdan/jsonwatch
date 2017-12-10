@@ -11,7 +11,8 @@ import           Control.Concurrent         (threadDelay)
 import           Control.Monad              (when)
 import qualified Data.Aeson                 as A
 import qualified Data.Aeson.Encode.Pretty   as AP
-import qualified Data.ByteString.Lazy.Char8 as C8
+import           Data.ByteString.Lazy       as BS
+import qualified Data.ByteString.Lazy.UTF8  as UTF8
 import           Data.Maybe                 (fromMaybe)
 import qualified Data.Text                  as T
 import           Data.Time.Clock            (getCurrentTime)
@@ -39,13 +40,14 @@ printDiff True  lines  = do
     let text = T.unlines [ T.append "    " x | x <- lines ]
     Prelude.putStrLn $ timeStr ++ "\n" ++ T.unpack text
 
-watch :: Int -> Bool -> Bool -> Maybe JD.FlatJson -> IO String -> IO ()
+watch :: Int -> Bool -> Bool -> Maybe JD.FlatJson -> IO BS.ByteString -> IO ()
 watch interval date print prev thunk = do
     jsonStr <- thunk
-    let decoded = A.decode $ C8.pack jsonStr
+    let decoded = A.decode jsonStr
     -- Only print valid JSON.
     case decoded of
-        Just value -> when print $ C8.putStrLn $ AP.encodePretty decoded
+        Just value -> when print $ Prelude.putStrLn $ UTF8.toString $
+                      AP.encodePretty decoded
         Nothing    -> return ()
     let jsonFlat = JD.flatten JP.empty $ fromMaybe (A.toJSON ()) decoded
     case prev of

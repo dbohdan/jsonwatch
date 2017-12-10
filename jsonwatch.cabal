@@ -1,5 +1,5 @@
 name:                jsonwatch
-version:             0.3.1.0
+version:             0.3.2.0
 -- synopsis:
 -- description:
 homepage:            https://github.com/dbohdan/jsonwatch#readme
@@ -25,6 +25,7 @@ library
                      , text >= 1.2 && < 1.3
                      , time >= 1.6 && < 1.7
                      , unordered-containers >= 0.2.7 && < 0.3
+                     , utf8-string >= 1.0.1.1 && < 1.1
                      , vector >= 0.11 && < 0.12
   default-language:    Haskell2010
 
@@ -40,6 +41,7 @@ executable jsonwatch
                      , optparse-applicative >= 0.13 && < 0.14
                      , process >= 1.4 && < 1.5
                      , text >= 1.2 && < 1.3
+                     , utf8-string >= 1.0.1.1 && < 1.1
   default-language:    Haskell2010
 
 test-suite jsonwatch-test
