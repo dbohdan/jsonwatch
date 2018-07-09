@@ -26,17 +26,19 @@ data WatchOpts = WatchOpts
 
 commandSourceOpt :: Parser Source
 commandSourceOpt = Command <$> strOption
-    ( long "command" <> short 'c' <> metavar "command" <> help
-        "Command to execute"
+    (  long "command"
+    <> short 'c'
+    <> metavar "command"
+    <> help "Command to execute"
     )
 
 urlSourceOpt :: Parser Source
-urlSourceOpt =
-    Url
-        <$> strOption
-                ( long "url" <> short 'u' <> metavar "url" <> help
-                    "URL to fetch"
-                )
+urlSourceOpt = Url <$> strOption
+    (  long "url"
+    <> short 'u'
+    <> metavar "url"
+    <> help "URL to fetch"
+    )
 
 sourceOpt :: Parser Source
 sourceOpt = commandSourceOpt <|> urlSourceOpt
@@ -67,8 +69,9 @@ main = start =<< execParser opts
   where
     opts = info
         (watchOpts <**> helper)
-        ( fullDesc <> progDesc "Track changes in JSON data" <> header
-            "jsonwatch v0.3.2"
+        (  fullDesc
+        <> progDesc "Track changes in JSON data"
+        <> header "jsonwatch v0.3.2"
         )
 
 httpGet :: String -> IO BS.ByteString
