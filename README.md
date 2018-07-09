@@ -132,7 +132,7 @@ Weather tracking.
 
 Geolocation. (Try this on a mobile device.)
 
-    $ jsonwatch -u http://freegeoip.net/json/ --no-initial-values -n 300
+    $ jsonwatch -u https://ipinfo.io/ --no-initial-values -n 300
 
 
 License
