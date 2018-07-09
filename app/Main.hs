@@ -80,9 +80,9 @@ httpGet url = do
 
 start :: WatchOpts -> IO ()
 start (WatchOpts source interval noDate noInitialValues) =
-    JW.watch interval (not noDate) (not noInitialValues) Nothing thunk
+    JW.watch interval (not noDate) (not noInitialValues) Nothing input
   where
-    thunk = case source of
+    input = case source of
         Command command -> readShellCommand command
         Url url -> httpGet url
     readShellCommand command = do

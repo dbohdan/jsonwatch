@@ -41,8 +41,8 @@ printDiff True  lines  = do
     Prelude.putStrLn $ timeStr ++ "\n" ++ T.unpack text
 
 watch :: Int -> Bool -> Bool -> Maybe JD.FlatJson -> IO BS.ByteString -> IO ()
-watch interval date print prev thunk = do
-    jsonStr <- thunk
+watch interval date print prev input = do
+    jsonStr <- input
     let decoded = A.decode jsonStr
     -- Only print valid JSON.
     case decoded of
@@ -55,4 +55,4 @@ watch interval date print prev thunk = do
             printDiff date $ JD.formatDiff $ JD.diff prevFlat jsonFlat
         Nothing -> return ()
     threadDelay $ interval * 1000000
-    watch interval date False (Just jsonFlat) thunk
+    watch interval date False (Just jsonFlat) input
