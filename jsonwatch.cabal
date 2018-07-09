@@ -17,16 +17,16 @@ library
   hs-source-dirs:      src
   exposed-modules:     JsonWatch.Diff, JsonWatch.Path, JsonWatch.Watch
   build-depends:       base >= 4.7 && < 5
-                     , aeson >= 1.0 && < 1.1
+                     , aeson >= 1.2 && < 1.3
                      , aeson-pretty >= 0.8.2 && < 0.9
                      , bytestring >= 0.10 && < 0.11
                      , containers >= 0.5.7.1 && < 0.6
                      , scientific >= 0.3.4 && < 0.4
                      , text >= 1.2 && < 1.3
-                     , time >= 1.6 && < 1.7
+                     , time >= 1.8 && < 1.9
                      , unordered-containers >= 0.2.7 && < 0.3
                      , utf8-string >= 1.0.1.1 && < 1.1
-                     , vector >= 0.11 && < 0.12
+                     , vector >= 0.12 && < 0.13
   default-language:    Haskell2010
 
 executable jsonwatch
@@ -38,8 +38,8 @@ executable jsonwatch
                      , bytestring >= 0.10 && < 0.11
                      , http-client >= 0.5 && < 0.6
                      , http-client-tls >= 0.3 && < 0.4
-                     , optparse-applicative >= 0.13 && < 0.14
-                     , process >= 1.4 && < 1.5
+                     , optparse-applicative >= 0.14 && < 0.15
+                     , process >= 1.6 && < 1.7
                      , text >= 1.2 && < 1.3
                      , utf8-string >= 1.0.1.1 && < 1.1
   default-language:    Haskell2010
@@ -50,7 +50,7 @@ test-suite jsonwatch-test
   main-is:             Spec.hs
   build-depends:       base
                      , jsonwatch
-                     , aeson >= 1.0.2.1 && < 1.1
+                     , aeson >= 1.2 && < 1.3
                      , containers >= 0.5.7.1 && < 0.6
                      , hspec >= 2.4 && < 2.5
                      , text >= 1.2 && < 1.3
