@@ -7,7 +7,7 @@ license:             MIT
 license-file:        LICENSE
 author:              dbohdan
 maintainer:          dbohdan@dbohdan.com
-copyright:           2014, 2015, 2017 dbohdan
+copyright:           2014, 2015, 2017, 2018 dbohdan
 category:            Console
 build-type:          Simple
 extra-source-files:  README.md
@@ -17,7 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     JsonWatch.Diff, JsonWatch.Path, JsonWatch.Watch
   build-depends:       base >= 4.7 && < 5
-                     , aeson >= 1.2 && < 1.3
+                     , aeson >= 1.3 && < 1.4
                      , aeson-pretty >= 0.8.2 && < 0.9
                      , bytestring >= 0.10 && < 0.11
                      , containers >= 0.5.7.1 && < 0.6
@@ -50,9 +50,9 @@ test-suite jsonwatch-test
   main-is:             Spec.hs
   build-depends:       base
                      , jsonwatch
-                     , aeson >= 1.2 && < 1.3
+                     , aeson >= 1.3 && < 1.4
                      , containers >= 0.5.7.1 && < 0.6
-                     , hspec >= 2.4 && < 2.5
+                     , hspec >= 2.5 && < 2.6
                      , text >= 1.2 && < 1.3
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
