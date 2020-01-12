@@ -1,4 +1,4 @@
--- Copyright (c) 2014, 2015, 2017, 2018 dbohdan
+-- Copyright (c) 2014, 2015, 2017, 2018, 2019 dbohdan
 -- This code is released under the MIT license. See the file LICENSE.
 {-# LANGUAGE OverloadedStrings #-}
 
