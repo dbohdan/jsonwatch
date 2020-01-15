@@ -3,60 +3,42 @@ jsonwatch — like watch -d but for JSON
 
 [![Build Status](https://travis-ci.org/dbohdan/jsonwatch.svg?branch=master)](https://travis-ci.org/dbohdan/jsonwatch)
 
-`jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes. It is similar but not isomorphic in its behavior to how [watch(1)](https://manpages.debian.org/jessie/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
+`jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes.  It is similar but not isomorphic in its behavior to how [watch(1)](https://manpages.debian.org/jessie/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
 
-It has been tested on FreeBSD 11.0-RELEASE, Debian 8, Ubuntu 16.04 and Windows 10.
+It has been tested on Debian 10 and Ubuntu 18.04.
 
-The previous version of `jsonwatch` written in Python is preserved in the branch [`python`](https://github.com/dbohdan/jsonwatch/tree/python).
+The two previous versions of `jsonwatch` are preserved in the branch [`python`](https://github.com/dbohdan/jsonwatch/tree/python) and [`haskell`](https://github.com/dbohdan/jsonwatch/tree/haskell).
 
 
 Installation
 ============
 
-Prebuilt Linux and Windows binaries are available. They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
+Prebuilt Linux binaries are available.  They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
 
-Building normally
------------------
+Building on Debian and Ubuntu
+-----------------------------
 
-To build `jsonwatch` from the source on FreeBSD, a Linux distribution or Windows follow the instructions below.
+To build `jsonwatch` from source on recent Debian and Ubuntu follow the instructions.
 
-1\. Install the [Haskell Stack](https://haskell-lang.org/get-started) and Git.
+1\. Install [Rustup](https://rustup.rs/).  Through Rustup add the stable MUSL target for your CPU.
 
-2\. Clone this repository. Build and install the binary.
+```sh
+rustup target add x86_64-unknown-linux-musl
+```
+
+2\. Install the build and testing dependencies.
+
+```sh
+sudo apt install build-essential expect musl-tools tcl
+```
+
+3\. Clone this repository.  Build and install the binary.
 
     git clone https://github.com/dbohdan/jsonwatch
     cd jsonwatch
-    stack test
-    stack install
-
-Building a static binary for Linux
-----------------------------------
-
-You will need [Docker](https://www.docker.com/). Clone this repository and in it run
-
-```sh
-# First build only. Create a volume to cache compiled build dependencies.
-docker volume create jsonwatch-stack-dir
-# Every build. Build a static binary of jsonwatch.
-docker build --tag jsonwatch .
-docker run --name jsonwatch-build \
-           --mount source=jsonwatch-stack-dir,target=/root/.stack \
-           jsonwatch \
-           stack --local-bin-path /usr/local/bin \
-                 --install-ghc install \
-                 --test \
-                 --ghc-options='-optl-static -optl-pthread'
-docker cp jsonwatch-build:/usr/local/bin/jsonwatch jsonwatch-static
-# Every build. Clean up the containers after a build. This includes the
-# containers from any failed builds.
-docker ps --all --quiet --filter=ancestor=jsonwatch | xargs docker rm
-# Last build only. Remove the volume and the image. Do this to free up disk
-# space (circa 2 GB total) once you do not expect to build jsonwatch again
-# soon. Note that building will take considerably longer if you have to
-# recreate the volume.
-docker rmi jsonwatch
-docker volume rm jsonwatch-stack-dir
-```
+    make debug test
+    make release
+    sudo make install "BUILD_USER=$USER"
 
 Use examples
 ============
