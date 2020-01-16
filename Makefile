@@ -4,10 +4,11 @@ PROJECT_TEMP ?= $(USER_TEMP)/jsonwatch-rust
 TARGET ?= x86_64-unknown-linux-musl
 BUILD_OPTS ?= --target $(TARGET)
 BUILD_OPTS_WITH_DIR ?= $(BUILD_OPTS) --target-dir $(PROJECT_TEMP)
+DEV_COMMAND ?= "cat tests/weather1.json"
 
 dev: temp-dir
 	# A workaround for https://github.com/rust-lang/rust/issues/46981
-	find Cargo.* src/ tests/ | entr -r sh -c 'cargo run $(BUILD_OPTS_WITH_DIR) -- -c "cat tests/weather1.json" < /dev/null'
+	find Cargo.* src/ tests/ | entr -r sh -c 'cargo run $(BUILD_OPTS_WITH_DIR) -- -c $(DEV_COMMAND) -n 1 < /dev/null'
 
 debug: temp-dir
 	cargo build $(BUILD_OPTS_WITH_DIR)
