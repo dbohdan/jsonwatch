@@ -20,7 +20,7 @@ struct Opts {
 
 fn cli() -> Opts {
     let matches = App::new("jsonwatch")
-        .version("0.4.0")
+        .version("0.5.0")
         .about("Track changes in JSON data")
         .arg(
             Arg::with_name("command")
@@ -127,17 +127,11 @@ fn watch(
         let prev = data.clone();
 
         data = serde_json::from_str(&lambda()).ok();
-        match data {
-            None => continue,
-            _ => {}
-        }
 
-        let flat_data = diff::flatten("".to_string(), data.clone().unwrap());
-        let flat_prev = diff::flatten("".to_string(), prev.unwrap());
-        let diff = diff::diff(flat_prev, flat_data);
+        let diff = diff::diff(&prev, &data);
 
-        let total = diff.total();
-        if total == 0 {
+        let changed = diff.len();
+        if changed == 0 {
             continue;
         }
 
@@ -145,15 +139,15 @@ fn watch(
             let local = Local::now();
             print!("{}", local.format("%Y-%m-%dT%H:%M:%S%z"));
 
-            if total == 1 {
+            if changed == 1 {
                 print!(" ");
             } else {
                 println!("");
             }
         }
 
-        if total == 1 {
-            println!("{}", diff);
+        if changed == 1 {
+            print!("{}", diff);
         } else {
             let s = format!("{}", diff)
                 .lines()
