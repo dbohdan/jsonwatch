@@ -1,0 +1,13 @@
+language: rust
+cache: cargo
+addons:
+  apt:
+    packages:
+      - expect
+      - musl-tools
+      - tcl
+before_install:
+  - rustup target add x86_64-unknown-linux-musl
+script:
+  - make debug
+  - make test
