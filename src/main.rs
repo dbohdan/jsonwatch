@@ -96,12 +96,7 @@ fn run_command(command: &str) -> String {
 }
 
 fn fetch_url(url: &str) -> String {
-    let resp = reqwest::blocking::get(url);
-
-    match resp {
-        Ok(res) => res.text().unwrap_or("".to_string()),
-        _ => "".to_string(),
-    }
+    ureq::get(url).call().into_string().unwrap_or("".to_string())
 }
 
 fn watch(

@@ -8,8 +8,4 @@ edition = "2018"
 chrono = "~0.4"
 clap = "~2.33"
 serde_json = {features = ["preserve_order"], version = "~1.0"}
-
-[dependencies.reqwest]
-default-features = false
-features = ["blocking", "rustls-tls"]
-version = "~0.10"
+ureq = "~0.11"
