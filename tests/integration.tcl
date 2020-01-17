@@ -121,6 +121,19 @@ proc wapp-page-alternate {} {
 }
 
 
+proc wapp-page-nested-obj {} {
+    wapp-mimetype application/json
+
+    if {$::count % 2} {
+        wapp {{"k": "v"}}
+    } else {
+        wapp {{"k": {"nested": "v2"}}}
+    }
+
+    incr ::count
+}
+
+
 wapp-start [list -fromip 127.*.*.* -nowait -server $port -trace]
 
 
@@ -158,6 +171,22 @@ tcltest::test url-1.3 {} -body {
 
     expect {
         -regexp {    ?\.0: "?bar"? -> "?foo"?\s+    ?\+ .1: "?baz"?} {
+            lindex matched
+        }
+        timeout {
+            lindex {timed out}
+        }
+    }
+} -cleanup close -result matched
+
+
+tcltest::test url-1.4 {} -body {
+    spawn $::binary --url http://localhost:$port/nested-obj \
+                    -n 1 \
+                    --no-initial-values
+
+    expect {
+        -regexp {    ?- \.k\.nested: "v2"\s+    \+ \.k: "v"} {
             lindex matched
         }
         timeout {
