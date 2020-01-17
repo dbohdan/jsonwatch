@@ -120,4 +120,4 @@ Geolocation. (Try this on a mobile device.)
 License
 =======
 
-`jsonwatch` is distributed under the MIT license. See the file `LICENSE` for details.
+`jsonwatch` is distributed under the MIT license.  See the file `LICENSE` for details.   [Wapp](tests/vendor/wapp/wapp.tcl) is copyright (c) 2017 D. Richard Hipp and is distributed under the Simplified BSD License.
