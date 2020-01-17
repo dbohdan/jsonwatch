@@ -26,7 +26,7 @@ temp-dir:
 
 test: test-unit test-integration
 
-test-integration:
+test-integration: debug
 	tclsh tests/integration.tcl $(PROJECT_TEMP)/$(TARGET)/debug/jsonwatch
 
 test-unit:

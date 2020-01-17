@@ -36,7 +36,7 @@ sudo apt install build-essential expect musl-tools tcl
 
     git clone https://github.com/dbohdan/jsonwatch
     cd jsonwatch
-    make debug test
+    make test
     make release
     sudo make install "BUILD_USER=$USER"
 
