@@ -93,46 +93,100 @@ Testing `jsonwatch`.
     $ jsonwatch -n 1 -c "echo '{ \"filename\": \"'\$(mktemp -u)'\"}'"
 
     {
-        "filename": "/tmp/tmp.ZYFQ5RwGN5"
+      "filename": "/tmp/tmp.dh3Y7LJTaK"
     }
-    2014-03-16T22:40:08.130170 .filename: /tmp/tmp.ZYFQ5RwGN5 -> /tmp/tmp.Pi0WXp2Aoj
-    2014-03-16T22:40:09.133995 .filename: /tmp/tmp.Pi0WXp2Aoj -> /tmp/tmp.2U181cBL2L
-    2014-03-16T22:40:10.137640 .filename: /tmp/tmp.2U181cBL2L -> /tmp/tmp.i5sGwYig4S
-    2014-03-16T22:40:11.141320 .filename: /tmp/tmp.i5sGwYig4S -> /tmp/tmp.Sv0s60LuoT
-    2014-03-16T22:40:12.144990 .filename: /tmp/tmp.Sv0s60LuoT -> /tmp/tmp.skSIruBLfQ
+    2020-01-19T18:52:19+0000 .filename: "/tmp/tmp.dh3Y7LJTaK" -> "/tmp/tmp.i4s56VENEJ"
+    2020-01-19T18:52:20+0000 .filename: "/tmp/tmp.i4s56VENEJ" -> "/tmp/tmp.zzMUSn45Fc"
+    2020-01-19T18:52:21+0000 .filename: "/tmp/tmp.zzMUSn45Fc" -> "/tmp/tmp.Jj1cKt6VLr"
+    2020-01-19T18:52:22+0000 .filename: "/tmp/tmp.Jj1cKt6VLr" -> "/tmp/tmp.1LGk4ok8O2"
+    2020-01-19T18:52:23+0000 .filename: "/tmp/tmp.1LGk4ok8O2" -> "/tmp/tmp.wWulyho8Qj"
 
-Cryptocurrency daemon information (including balance changes).
+Docker process information.
 
-    $ jsonwatch --no-initial-values -c "dogecoind getinfo"
+    $ jsonwatch -c 'docker ps -a "--format={{json .}}"' -n 1
 
-    2014-03-18T14:16:57.855226 .blocks: 145779 -> 145780
-    2014-03-18T14:17:07.922137
-        .blocks: 145780 -> 145781
-        .difficulty: 1316.42722979 -> 1178.89009968
-    2014-03-18T14:19:13.921734 .connections: 8 -> 7
-    2014-03-18T14:19:39.128119 .connections: 7 -> 8
+    2020-01-19T18:57:20+0000
+        + .Command: "\"bash\""
+        + .CreatedAt: "2020-01-19 18:57:20 +0000 UTC"
+        + .ID: "dce7fb2194ed"
+        + .Image: "i386/ubuntu:latest"
+        + .Labels: ""
+        + .LocalVolumes: "0"
+        + .Mounts: ""
+        + .Names: "dreamy_edison"
+        + .Networks: "bridge"
+        + .Ports: ""
+        + .RunningFor: "Less than a second ago"
+        + .Size: "0B"
+        + .Status: "Created"
+    2020-01-19T18:57:21+0000 .RunningFor: "Less than a second ago" -> "1 second ago"
+    2020-01-19T18:57:23+0000
+        .RunningFor: "1 second ago" -> "3 seconds ago"
+        .Status: "Created" -> "Up 1 second"
+    2020-01-19T18:57:24+0000
+        .RunningFor: "3 seconds ago" -> "4 seconds ago"
+        .Status: "Up 1 second" -> "Up 2 seconds"
+    2020-01-19T18:57:25+0000
+        .RunningFor: "4 seconds ago" -> "5 seconds ago"
+        .Status: "Up 2 seconds" -> "Up 3 seconds"
 
 ### Windows
 
 On Windows `-c` executes `cmd.exe` commands.
 
-    > jsonwatch -c "type test\weather1.json"
+    > jsonwatch -c "type tests\weather1.json"
 
-    {"clouds": {"all": 92}, "name": "Kiev", "coord": {
-    "lat": 50.43, "lon": 30.52}, "sys": {"country": "UA",
-    "message": 0.0051, "sunset": 1394985874, "sunrise": 1394942901
-    }, "weather": [{"main": "Snow", "id": 612, "icon": "13d",
-    "description": "light shower sleet"}, {"main": "Rain", "id":
-    520, "icon": "09d", "description": "light intensity shower rain"}],
-    "rain": {"3h": 2}, "base": "cmc stations", "dt":
-    1394979003, "main": {"pressure": 974.8229, "humidity": 91,
-    "temp_max": 277.45, "temp": 276.45, "temp_min": 276.15}, "id"
-    : 703448, "wind": {"speed": 10.27, "deg": 245.507}, "cod":
-    200}
-
-    2017-03-02T16:58:08+0200 + .test: true
-    2017-03-02T17:00:52+0200 .test: true -> false
-    2017-03-02T17:01:04+0200 - .test: false
+    {
+      "clouds": {
+        "all": 92
+      },
+      "name": "Kiev",
+      "coord": {
+        "lat": 50.43,
+        "lon": 30.52
+      },
+      "sys": {
+        "country": "UA",
+        "message": 0.0051,
+        "sunset": 1394985874,
+        "sunrise": 1394942901
+      },
+      "weather": [
+        {
+          "main": "Snow",
+          "id": 612,
+          "icon": "13d",
+          "description": "light shower sleet"
+        },
+        {
+          "main": "Rain",
+          "id": 520,
+          "icon": "09d",
+          "description": "light intensity shower rain"
+        }
+      ],
+      "rain": {
+        "3h": 2
+      },
+      "base": "cmc stations",
+      "dt": 1394979003,
+      "main": {
+        "pressure": 974.8229,
+        "humidity": 91,
+        "temp_max": 277.45,
+        "temp": 276.45,
+        "temp_min": 276.15
+      },
+      "id": 703448,
+      "wind": {
+        "speed": 10.27,
+        "deg": 245.507
+      },
+      "cod": 200
+    }
+    2020-01-19T18:51:04+0000 + .test: true
+    2020-01-19T18:51:10+0000 .test: true -> false
+    2020-01-19T18:51:23+0000 - .test: false
 
 URLs
 ----
