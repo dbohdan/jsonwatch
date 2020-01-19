@@ -5,7 +5,7 @@ jsonwatch — like watch -d but for JSON
 
 `jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes.  It is similar but not isomorphic in its behavior to how [watch(1)](https://manpages.debian.org/stable/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
 
-It has been tested on Debian 10 and Ubuntu 18.04.
+It has been tested on Debian 10, Ubuntu 18.04, and Windows 7.
 
 The two previous versions of `jsonwatch` are preserved in the branch [`python`](https://github.com/dbohdan/jsonwatch/tree/python) and [`haskell`](https://github.com/dbohdan/jsonwatch/tree/haskell).
 
@@ -13,12 +13,12 @@ The two previous versions of `jsonwatch` are preserved in the branch [`python`](
 Installation
 ============
 
-Prebuilt Linux binaries are available.  They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
+Prebuilt Linux and Windows binaries are available.  They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
 
 Building on Debian and Ubuntu
 -----------------------------
 
-To build `jsonwatch` from source on recent Debian and Ubuntu follow the instructions.
+Follow the instructions to build a static Linux binary of `jsonwatch` from source on recent Debian and Ubuntu.
 
 1\. Install [Rustup](https://rustup.rs/).  Through Rustup add the stable MUSL target for your CPU.
 
@@ -39,6 +39,46 @@ sudo apt install build-essential expect musl-tools tcl
     make test
     make release
     sudo make install "BUILD_USER=$USER"
+
+Cross-compiling for Windows
+---------------------------
+
+Follow the instructions to build a 32-bit Windows binary of `jsonwatch` on recent Debian and Ubuntu.
+
+1\. Install [Rustup](https://rustup.rs/).  Through Rustup add the i686 GNU ABI Windows target.
+
+```sh
+rustup target add i686-pc-windows-gnu
+```
+
+2\. Install the build dependencies.
+
+```sh
+sudo apt install build-essential mingw-w64
+```
+
+3\. Configure Cargo for cross-compilation.  Put the following in `~/.cargo/config`.
+
+```toml
+[target.i686-pc-windows-gnu]
+linker = "/usr/bin/i686-w64-mingw32-gcc"
+```
+
+4\. Fix the [`crt2.o` issue](https://github.com/rust-lang/rust/issues/48272#issuecomment-429596397).
+
+```sh
+cd ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/
+mv crt2.o crt2.o.bak
+cp /usr/i686-w64-mingw32/lib/crt2.o .
+```
+
+5\. Clone this repository.  Build the binary.
+
+    git clone https://github.com/dbohdan/jsonwatch
+    cd jsonwatch
+    make release TARGET=i686-pc-windows-gnu
+    cp "/tmp/$USER/jsonwatch-rust/i686-pc-windows-gnu/release/jsonwatch.exe" .
+
 
 Use examples
 ============
