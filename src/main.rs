@@ -96,7 +96,11 @@ fn run_command(command: &str) -> String {
 }
 
 fn fetch_url(url: &str) -> String {
-    ureq::get(url).call().into_string().unwrap_or("".to_string())
+    ureq::get(url)
+        .set("User-Agent", "curl/7.58.0")
+        .call()
+        .into_string()
+        .unwrap_or("".to_string())
 }
 
 fn watch(
