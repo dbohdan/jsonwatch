@@ -20,7 +20,7 @@ struct Opts {
 
 fn cli() -> Opts {
     let matches = App::new("jsonwatch")
-        .version("0.5.0")
+        .version("0.6.0")
         .about("Track changes in JSON data")
         .arg(
             Arg::with_name("command")
