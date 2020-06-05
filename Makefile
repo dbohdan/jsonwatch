@@ -1,6 +1,6 @@
 BUILD_USER ?= $(USER)
 USER_TEMP ?= /tmp/$(BUILD_USER)
-PROJECT_TEMP ?= $(USER_TEMP)/jsonwatch-rust
+PROJECT_TEMP ?= $(USER_TEMP)/cargo/jsonwatch
 TARGET ?= x86_64-unknown-linux-musl
 BUILD_OPTS ?= --target $(TARGET)
 BUILD_OPTS_WITH_DIR ?= $(BUILD_OPTS) --target-dir $(PROJECT_TEMP)
@@ -22,7 +22,7 @@ release: temp-dir
 
 temp-dir:
 	@-mkdir -m 0700 $(USER_TEMP)/ 2> /dev/null
-	@-mkdir $(PROJECT_TEMP)/ 2> /dev/null
+	@-mkdir -p $(PROJECT_TEMP)/ 2> /dev/null
 
 test: test-unit test-integration
 
