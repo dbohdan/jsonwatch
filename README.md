@@ -76,7 +76,7 @@ cp /usr/i686-w64-mingw32/lib/crt2.o .
 
     git clone https://github.com/dbohdan/jsonwatch
     cd jsonwatch
-    make release TARGET=i686-pc-windows-gnu
+    RUSTFLAGS="-C panic=abort -C lto" make release TARGET=i686-pc-windows-gnu
     cp "/tmp/$USER/cargo/jsonwatch/i686-pc-windows-gnu/release/jsonwatch.exe" .
 
 
