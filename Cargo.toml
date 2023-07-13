@@ -3,6 +3,13 @@ name = "jsonwatch"
 version = "0.6.0"
 authors = ["D. Bohdan <dbohdan@dbohdan.com>"]
 edition = "2018"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/dbohdan/jsonwatch"
+homepage = "https://github.com/dbohdan/jsonwatch"
+description = "Track changes in JSON data from the command line"
+keywords = ["json"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 chrono = "~0.4"
