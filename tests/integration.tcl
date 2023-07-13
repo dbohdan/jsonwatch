@@ -28,7 +28,7 @@ set max_match 100000
 set timeout 5
 
 set ::argv [lassign $::argv binary]
-if {$binary eq {} || ![file exists $binary]} {
+if {![file exists $binary]} {
     puts stderr "usage: [file tail [info script]] binary \[tcltest-arg ...\]"
     exit 1
 }
