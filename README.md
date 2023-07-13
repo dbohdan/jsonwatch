@@ -40,7 +40,7 @@ sudo apt install build-essential expect musl-tools
     make test
     make release-linux
 
-##$ Cross-compiling for Windows
+### Cross-compiling for Windows
 
 Follow the instructions to build a 32-bit Windows binary of `jsonwatch` on recent Debian and Ubuntu.
 
