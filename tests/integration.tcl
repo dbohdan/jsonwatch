@@ -1,7 +1,7 @@
 #! /usr/bin/env tclsh
 # Integration tests for jsonwatch.
 # ==============================================================================
-# Copyright (c) 2020 D. Bohdan and contributors listed in AUTHORS
+# Copyright (c) 2020, 2023 D. Bohdan and contributors listed in AUTHORS
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -36,28 +36,29 @@ if {![file exists $binary]} {
 package require tcltest 2
 source [file dirname [info script]]/vendor/wapp/wapp.tcl
 
+set host 127.0.0.1
 set port 8015
 
 
 # CLI.
 
 tcltest::test cli-1.1 {} -body {
-    exec $::binary -h
+    exec $binary -h
 } -match regexp -result ***:(?i)usage
 
 tcltest::test cli-1.2 {} -body {
-    exec $::binary --nonsense
+    exec $binary --nonsense
 } -returnCodes error -match glob -result *
 
 tcltest::test cli-1.3 {} -body {
-    exec $::binary -c false -u http://example.com
+    exec $binary -c false -u http://example.com
 } -returnCodes error -match glob -result *
 
 
 # Command tests.
 
 tcltest::test command-1.1 {} -body {
-    spawn $::binary -c {cat tests/weather1.json}
+    spawn $binary -c {cat tests/weather1.json}
     expect {
         -regexp {"description":\s*"light shower sleet"} { return matched }
         timeout { return {timed out} }
@@ -66,7 +67,7 @@ tcltest::test command-1.1 {} -body {
 
 
 tcltest::test command-1.2 {} -setup {set timeout 2} -body {
-    spawn $::binary -c {cat tests/weather1.json} -n 1 --no-initial-values
+    spawn $binary -c {cat tests/weather1.json} -n 1 --no-initial-values
     expect {
         -regexp {[A-Za-z0-9]} { return text }
         timeout { return {timed out} }
@@ -79,7 +80,7 @@ tcltest::test command-1.3 {} -body {
     puts $ch {[1,2,3,4,5]}
     flush $ch
 
-    spawn $::binary --command "cat '$path'" -n 1
+    spawn $binary --command "cat '$path'" -n 1
     expect {
         -glob *1*2*3*4*5* {}
         timeout { return {first timeout} }
@@ -134,11 +135,11 @@ proc wapp-page-nested-obj {} {
 }
 
 
-wapp-start [list -fromip 127.*.*.* -nowait -server $port -trace]
+wapp-start [list -fromip 127.0.0.1 -nowait -server $port -trace]
 
 
 tcltest::test url-1.1 {} -body {
-    spawn $::binary -u http://localhost:$port/timestamp --interval 1
+    spawn $binary -u http://$host:$port/timestamp --interval 1
     set re {{\s*"timestamp":\s*\d+\s*}}
     expect \
         -regexp $re { lindex matched } \
@@ -155,7 +156,7 @@ tcltest::test url-1.1 {} -body {
 
 
 tcltest::test url-1.2 {} -body {
-    spawn $::binary --url http://localhost:$port/timestamp -n 1 --no-date
+    spawn $binary --url http://$host:$port/timestamp -n 1 --no-date
 
     expect {
         -regexp {\n.timestamp: \d+ -> \d+} { lindex matched }
@@ -165,9 +166,9 @@ tcltest::test url-1.2 {} -body {
 
 
 tcltest::test url-1.3 {} -body {
-    spawn $::binary --url http://localhost:$port/alternate \
-                    -n 1 \
-                    --no-initial-values
+    spawn $binary --url http://$host:$port/alternate \
+                  -n 1 \
+                  --no-initial-values
 
     expect {
         -regexp {    ?\.0: "?bar"? -> "?foo"?\s+    ?\+ .1: "?baz"?} {
@@ -181,9 +182,9 @@ tcltest::test url-1.3 {} -body {
 
 
 tcltest::test url-1.4 {} -body {
-    spawn $::binary --url http://localhost:$port/nested-obj \
-                    -n 1 \
-                    --no-initial-values
+    spawn $binary --url http://$host:$port/nested-obj \
+                  -n 1 \
+                  --no-initial-values
 
     expect {
         -regexp {    ?- \.k\.nested: "v2"\s+    \+ \.k: "v"} {
