@@ -1,24 +1,27 @@
-jsonwatch — like watch -d but for JSON
-======================================
+# jsonwatch — like watch -d but for JSON
 
-`jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes.  It is similar but not isomorphic in its behavior to how [watch(1)](https://manpages.debian.org/stable/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
+`jsonwatch` is a command line utility with which you can track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API. `jsonwatch` requests data from the designated source repeatedly at a set interval and displays the differences when the data changes. It is similar but not isomorphic in its behavior to how [watch(1)](https://manpages.debian.org/stable/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
 
 It has been tested on Debian 10, Ubuntu 18.04, and Windows 7.
 
 The two previous versions of `jsonwatch` are preserved in the branch [`python`](https://github.com/dbohdan/jsonwatch/tree/python) and [`haskell`](https://github.com/dbohdan/jsonwatch/tree/haskell).
 
 
-Installation
-============
+## Installation
 
-Prebuilt Linux and Windows binaries are available.  They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
+Prebuilt Linux and Windows binaries are available. They are attached to releases on the [Releases](https://github.com/dbohdan/jsonwatch/releases) page.
 
-Building on Debian and Ubuntu
------------------------------
+### Installing with Cargo
+
+```shell
+cargo install jsonwatch
+```
+
+### Building on Debian and Ubuntu
 
 Follow the instructions to build a static Linux binary of `jsonwatch` from source on recent Debian and Ubuntu.
 
-1\. Install [Rustup](https://rustup.rs/).  Through Rustup add the stable MUSL target for your CPU.
+1\. Install [Rustup](https://rustup.rs/). Through Rustup add the stable MUSL target for your CPU.
 
 ```sh
 rustup target add x86_64-unknown-linux-musl
@@ -27,23 +30,21 @@ rustup target add x86_64-unknown-linux-musl
 2\. Install the build and testing dependencies.
 
 ```sh
-sudo apt install build-essential expect musl-tools tcl
+sudo apt install build-essential expect musl-tools
 ```
 
-3\. Clone this repository.  Build and install the binary.
+3\. Clone this repository. Build the binary.
 
     git clone https://github.com/dbohdan/jsonwatch
     cd jsonwatch
     make test
-    make release
-    sudo make install "BUILD_USER=$USER"
+    make release-linux
 
-Cross-compiling for Windows
----------------------------
+##$ Cross-compiling for Windows
 
 Follow the instructions to build a 32-bit Windows binary of `jsonwatch` on recent Debian and Ubuntu.
 
-1\. Install [Rustup](https://rustup.rs/).  Through Rustup add the i686 GNU ABI Windows target.
+1\. Install [Rustup](https://rustup.rs/). Through Rustup add the i686 GNU ABI Windows target.
 
 ```sh
 rustup target add i686-pc-windows-gnu
@@ -55,36 +56,25 @@ rustup target add i686-pc-windows-gnu
 sudo apt install build-essential mingw-w64
 ```
 
-3\. Configure Cargo for cross-compilation.  Put the following in `~/.cargo/config`.
+3\. Configure Cargo for cross-compilation. Put the following in `~/.cargo/config`.
 
 ```toml
 [target.i686-pc-windows-gnu]
 linker = "/usr/bin/i686-w64-mingw32-gcc"
 ```
 
-4\. Fix the [`crt2.o` issue](https://github.com/rust-lang/rust/issues/48272#issuecomment-429596397).
-
-```sh
-cd ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/i686-pc-windows-gnu/lib/
-mv crt2.o crt2.o.bak
-cp /usr/i686-w64-mingw32/lib/crt2.o .
-```
-
-5\. Clone this repository.  Build the binary.
+4\. Clone this repository. Build the binary.
 
     git clone https://github.com/dbohdan/jsonwatch
     cd jsonwatch
-    RUSTFLAGS="-C panic=abort -C lto" make release TARGET=i686-pc-windows-gnu
-    cp "/tmp/$USER/cargo/jsonwatch/i686-pc-windows-gnu/release/jsonwatch.exe" .
+    make release-windows
 
 
-Use examples
-============
+## Use examples
 
-Commands
---------
+### Commands
 
-### *nix
+#### *nix
 
 Testing `jsonwatch`.
 
@@ -128,7 +118,7 @@ Docker process information.
         .RunningFor: "4 seconds ago" -> "5 seconds ago"
         .Status: "Up 2 seconds" -> "Up 3 seconds"
 
-### Windows
+#### Windows
 
 On Windows `-c` executes `cmd.exe` commands.
 
@@ -186,8 +176,7 @@ On Windows `-c` executes `cmd.exe` commands.
     2020-01-19T18:51:10+0000 .test: true -> false
     2020-01-19T18:51:23+0000 - .test: false
 
-URLs
-----
+### URLs
 
 Watching a URL works identically on *nix and on Windows.
 
@@ -209,7 +198,6 @@ Geolocation. (Try this on a mobile device.)
     $ jsonwatch -u https://ipinfo.io/ --no-initial-values -n 300
 
 
-License
-=======
+## License
 
-`jsonwatch` is distributed under the MIT license.  See the file `LICENSE` for details.   [Wapp](tests/vendor/wapp/wapp.tcl) is copyright (c) 2017 D. Richard Hipp and is distributed under the Simplified BSD License.
+`jsonwatch` is distributed under the MIT license. See the file `LICENSE` for details.  [Wapp](tests/vendor/wapp/wapp.tcl) is copyright (c) 2017 D. Richard Hipp and is distributed under the Simplified BSD License.
