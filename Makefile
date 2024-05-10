@@ -1,4 +1,5 @@
 JSONWATCH_COMMAND ?= target/debug/jsonwatch
+TCLSH ?= tclsh
 
 all: test
 
@@ -20,7 +21,7 @@ release-windows:
 test: debug test-unit test-integration
 
 test-integration:
-	tclsh tests/integration.tcl "$(JSONWATCH_COMMAND)"
+	$(TCLSH) tests/integration.tcl "$(JSONWATCH_COMMAND)"
 
 test-unit:
 	cargo test
