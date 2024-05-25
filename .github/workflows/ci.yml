@@ -1,10 +1,21 @@
 name: CI
-on: [push]
+on: [push, pull_request]
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
-    - name: Run CI script
-      run: .github/workflows/ci.sh
+      uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y expect
+    - name: Set up just
+      uses: extractions/setup-just@v2
+    - name: Run tests
+      run: |
+        just test
