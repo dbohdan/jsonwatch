@@ -24,32 +24,44 @@
 
 package require Tcl 8.6
 package require Expect 5
+package require tcltest 2
 
+source [file dirname [info script]]/vendor/wapp/wapp.tcl
+
+# Expect settings.
 set max_match 100000
 set timeout 5
 
-set ::argv [lassign $::argv binary]
-if {![file exists $binary]} {
-    puts stderr "usage: [file tail [info script]] binary \[tcltest-arg ...\]"
-    exit 1
-}
-
-package require tcltest 2
-source [file dirname [info script]]/vendor/wapp/wapp.tcl
-
+# Our own settings.
+set env_var JSONWATCH_COMMAND
 set host 127.0.0.1
 set port 8015
 
 
-# CLI.
+if {![info exists ::env($env_var)]} {
+    puts stderr [list environment variable $env_var must be set]
+    exit 2
+}
+
+set binary $::env(JSONWATCH_COMMAND)
+
+if {![file exists $binary]} {
+    puts stderr [list file $binary from environment variable $env_var doesn't exist]
+    exit 2
+}
+
+
+# CLI smoke tests.
 
 tcltest::test cli-1.1 {} -body {
     exec $binary -h
 } -match regexp -result ***:(?i)usage
 
+
 tcltest::test cli-1.2 {} -body {
     exec $binary --nonsense
 } -returnCodes error -match glob -result *
+
 
 tcltest::test cli-1.3 {} -body {
     exec $binary -c false -u http://example.com
