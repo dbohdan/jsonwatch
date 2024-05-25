@@ -18,6 +18,8 @@ struct Opts {
     print_initial: bool,
 }
 
+const USER_AGENT: &str = "curl/7.58.0";
+
 fn cli() -> Opts {
     let matches = App::new("jsonwatch")
         .version("0.6.0")
@@ -96,11 +98,11 @@ fn run_command(command: &str) -> String {
 }
 
 fn fetch_url(url: &str) -> String {
-    ureq::get(url)
-        .set("User-Agent", "curl/7.58.0")
-        .call()
-        .into_string()
-        .unwrap_or("".to_string())
+    if let Ok(result) = ureq::get(url).set("User-Agent", USER_AGENT).call() {
+        result.into_string().unwrap_or("".to_string())
+    } else {
+        "".to_string()
+    }
 }
 
 fn watch(
