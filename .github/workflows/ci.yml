@@ -7,15 +7,26 @@ jobs:
     strategy:
       matrix:
         os:
+        - macos-latest
         - ubuntu-latest
+        - windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Install dependencies
+
+    - name: Install dependencies with APT
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
-        sudo apt-get install -y expect
+          sudo apt-get install -y expect
+
+    - name: Install dependencies with Homebrew
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        brew install expect
+
     - name: Set up just
       uses: extractions/setup-just@v2
+
     - name: Run tests
       run: |
         just test
