@@ -43,7 +43,7 @@ if {![info exists ::env($env_var)]} {
     exit 2
 }
 
-set binary $::env(JSONWATCH_COMMAND)
+set binary $::env($env_var)
 
 if {![file exists $binary]} {
     puts stderr [list file $binary from environment variable $env_var doesn't exist]
