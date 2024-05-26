@@ -1,3 +1,5 @@
+set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
+
 export JSONWATCH_COMMAND := "target/debug/jsonwatch"
 export TCLSH := "tclsh"
 
@@ -30,7 +32,7 @@ test: debug test-unit
 # The integration tests use Expect and do not work on Windows.
 [unix]
 test-integration:
-  {{ TCLSH }} tests/integration.tcl
+  {{TCLSH}} tests/integration.tcl
 
 test-unit:
   cargo test
