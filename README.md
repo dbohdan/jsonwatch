@@ -206,7 +206,7 @@ On Windows, `-c` executes `cmd.exe` commands.
 Watching a URL works identically on *nix and on Windows.
 
 Weather tracking.
-(This API is no longer works without a key.)
+(This API no longer works without a key.)
 
 ```none
 $ jsonwatch -u http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua --no-initial-values -n 300
