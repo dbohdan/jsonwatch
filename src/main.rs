@@ -1,7 +1,6 @@
 use chrono::prelude::*;
-use clap::{App, Arg, ArgGroup};
+use clap::Parser;
 use jsonwatch::diff;
-
 use std::{process::Command, str, thread, time};
 
 #[derive(Debug)]
@@ -10,77 +9,42 @@ enum DataSource {
     URL(String),
 }
 
-#[derive(Debug)]
+#[derive(Parser, Debug)]
+#[command(name = "jsonwatch")]
+#[command(about = "Track changes in JSON data", version = "0.6.0")]
 struct Opts {
-    data_source: DataSource,
+    /// Command to execute
+    #[arg(short, long, value_name = "command", group = "source")]
+    command: Option<String>,
+
+    /// URL to fetch
+    #[arg(short, long, value_name = "url", group = "source")]
+    url: Option<String>,
+
+    /// Polling interval in seconds
+    #[arg(short = 'n', long, value_name = "seconds", default_value = "5")]
     interval: u32,
-    print_date: bool,
-    print_initial: bool,
+
+    /// Don't print date and time for each diff
+    #[arg(long)]
+    no_date: bool,
+
+    /// Don't print initial JSON values
+    #[arg(long)]
+    no_initial_values: bool,
+}
+
+impl Opts {
+    fn get_data_source(&self) -> DataSource {
+        match (&self.command, &self.url) {
+            (Some(cmd), None) => DataSource::Command(cmd.clone()),
+            (None, Some(url)) => DataSource::URL(url.clone()),
+            _ => unreachable!("clap ensures exactly one source is provided"),
+        }
+    }
 }
 
 const USER_AGENT: &str = "curl/7.58.0";
-
-fn cli() -> Opts {
-    let matches = App::new("jsonwatch")
-        .version("0.6.0")
-        .about("Track changes in JSON data")
-        .arg(
-            Arg::with_name("command")
-                .short("c")
-                .long("command")
-                .value_name("command")
-                .help("Command to execute"),
-        )
-        .arg(
-            Arg::with_name("url")
-                .short("u")
-                .long("url")
-                .value_name("url")
-                .help("URL to fetch"),
-        )
-        .group(
-            ArgGroup::with_name("source")
-                .args(&["command", "url"])
-                .required(true),
-        )
-        .arg(
-            Arg::with_name("interval")
-                .short("n")
-                .long("interval")
-                .value_name("seconds")
-                .help("Polling interval"),
-        )
-        .arg(
-            Arg::with_name("no-date")
-                .long("no-date")
-                .help("Don't print date and time for each diff"),
-        )
-        .arg(
-            Arg::with_name("no-initial-values")
-                .long("no-initial-values")
-                .help("Don't print initial JSON values"),
-        )
-        .get_matches();
-
-    let data_source = if matches.is_present("command") {
-        DataSource::Command(matches.value_of("command").unwrap().to_string())
-    } else {
-        DataSource::URL(matches.value_of("url").unwrap().to_string())
-    };
-
-    let interval = matches
-        .value_of("interval")
-        .unwrap_or("5")
-        .parse::<u32>()
-        .expect("Polling interval must be a non-negative whole number");
-
-    Opts {
-        data_source: data_source,
-        interval: interval,
-        print_date: !matches.is_present("no-date"),
-        print_initial: !matches.is_present("no-initial-values"),
-    }
-}
 
 fn run_command(command: &str) -> String {
     let output = if cfg!(target_os = "windows") {
@@ -160,17 +124,17 @@ fn watch(
 }
 
 fn main() {
-    let opts = cli();
+    let opts = Opts::parse();
 
-    let lambda: Box<dyn Fn() -> String> = match opts.data_source {
+    let lambda: Box<dyn Fn() -> String> = match opts.get_data_source() {
         DataSource::Command(cmd) => Box::new(move || run_command(&cmd)),
         DataSource::URL(url) => Box::new(move || fetch_url(&url)),
     };
 
     watch(
         time::Duration::from_secs(opts.interval as u64),
-        opts.print_date,
-        opts.print_initial,
+        !opts.no_date,
+        !opts.no_initial_values,
         lambda,
     );
 }
