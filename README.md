@@ -12,7 +12,6 @@ The two previous versions of jsonwatch are preserved in the branch
 and
 [`haskell`](https://github.com/dbohdan/jsonwatch/tree/haskell).
 
-
 ## Installation
 
 Prebuilt binaries are available for Linux (x86_64) and Windows (x86).
@@ -91,6 +90,12 @@ just release-windows
 
 ## Usage
 
+You must run jsonwatch with a subcommand.
+
+jsonwatch ignores data that isn't valid JSON.
+
+### General options
+
 ```none
 Track changes in JSON data
 
@@ -150,7 +155,7 @@ Options:
 
 #### Testing jsonwatch
 
-This command uses the POSIX shell to generate random data as a test.
+This example uses the POSIX shell to generate random JSON test data.
 
 ```none
 $ jsonwatch -n 1 cmd sh -c "echo '{ \"filename\": \"'\$(mktemp -u)'\"}'"
@@ -198,8 +203,9 @@ $ jsonwatch command docker ps -a "--format={{json .}}"
     .Status: "Up 2 seconds" -> "Up 3 seconds"
 ```
 
-With multiple running containers, you will need a more complex command to transform the [JSON Lines](https://jsonlines.org/) output into a single JSON document.
-For example, it can be the following command with [jq](https://en.wikipedia.org/wiki/Jq_(programming_language)):
+For multiple running containers, you will need a more complex jsonwatch command.
+The command needs to transform the [JSON Lines](https://jsonlines.org/) output into a single JSON document.
+For example, it can be the following command with the POSIX shell and [jq](https://en.wikipedia.org/wiki/Jq_(programming_language)):
 
 ```shell
 jsonwatch -I cmd sh -c 'docker ps -a "--format={{json .}}" | jq -s .'
@@ -207,7 +213,8 @@ jsonwatch -I cmd sh -c 'docker ps -a "--format={{json .}}" | jq -s .'
 
 #### `cmd.exe` on Windows
 
-Below is the output log of a simple test on Windows.
+This example is a simple test on Windows.
+We start watching the output of a `cmd.exe` command, then manually edit the file the command prints and are shown the changes.
 
 ```none
 > jsonwatch command cmd.exe /c "type tests\weather1.json"
