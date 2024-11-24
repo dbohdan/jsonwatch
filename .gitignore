@@ -1,2 +1,7 @@
 /attic
 /target
+
+*.swp
+
+/help
+/jsonwatch*
