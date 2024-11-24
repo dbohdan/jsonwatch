@@ -64,14 +64,14 @@ tcltest::test cli-1.2 {} -body {
 
 
 tcltest::test cli-1.3 {} -body {
-    exec $binary -c false -u http://example.com
+    exec $binary url http://example.com command false
 } -returnCodes error -match glob -result *
 
 
 # Command tests.
 
 tcltest::test command-1.1 {} -body {
-    spawn $binary -c {cat tests/weather1.json}
+    spawn $binary command cat tests/weather1.json
     expect {
         -regexp {"description":\s*"light shower sleet"} { return matched }
         timeout { return {timed out} }
@@ -80,7 +80,7 @@ tcltest::test command-1.1 {} -body {
 
 
 tcltest::test command-1.2 {} -setup {set timeout 2} -body {
-    spawn $binary -c {cat tests/weather1.json} -n 1 --no-initial-values
+    spawn $binary -n 1 --no-initial-values command cat tests/weather1.json
     expect {
         -regexp {[A-Za-z0-9]} { return text }
         timeout { return {timed out} }
@@ -93,7 +93,7 @@ tcltest::test command-1.3 {} -body {
     puts $ch {[1,2,3,4,5]}
     flush $ch
 
-    spawn $binary --command "cat '$path'" -n 1
+    spawn $binary -n 1 command sh -c "cat '$path'"
     expect {
         -glob *1*2*3*4*5* {}
         timeout { return {first timeout} }
@@ -152,7 +152,7 @@ wapp-start [list -fromip 127.0.0.1 -nowait -server $port -trace]
 
 
 tcltest::test url-1.1 {} -body {
-    spawn $binary -u http://$host:$port/timestamp --interval 1
+    spawn $binary --interval 1 u http://$host:$port/timestamp
     set re {{\s*"timestamp":\s*\d+\s*}}
     expect \
         -regexp $re { lindex matched } \
@@ -169,7 +169,7 @@ tcltest::test url-1.1 {} -body {
 
 
 tcltest::test url-1.2 {} -body {
-    spawn $binary --url http://$host:$port/timestamp -n 1 --no-date
+    spawn $binary -n 1 --no-date url http://$host:$port/timestamp
 
     expect {
         -regexp {\n.timestamp: \d+ -> \d+} { lindex matched }
@@ -179,9 +179,7 @@ tcltest::test url-1.2 {} -body {
 
 
 tcltest::test url-1.3 {} -body {
-    spawn $binary --url http://$host:$port/alternate \
-                  -n 1 \
-                  --no-initial-values
+    spawn $binary -I -n 1 url http://$host:$port/alternate
 
     expect {
         -regexp {    ?\.0: "?bar"? -> "?foo"?\s+    ?\+ .1: "?baz"?} {
@@ -195,9 +193,7 @@ tcltest::test url-1.3 {} -body {
 
 
 tcltest::test url-1.4 {} -body {
-    spawn $binary --url http://$host:$port/nested-obj \
-                  -n 1 \
-                  --no-initial-values
+    spawn $binary -n 1 --no-initial-values url http://$host:$port/nested-obj
 
     expect {
         -regexp {    ?- \.k\.nested: "v2"\s+    \+ \.k: "v"} {

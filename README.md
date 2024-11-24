@@ -1,9 +1,9 @@
-# jsonwatch — like `watch -d` but for JSON
+# jsonwatch — like `watch -d`, but for JSON
 
-jsonwatch is a command-line utility that lets you track changes in JSON data delivered by a shell command or a web (HTTP/HTTPS) API.
+jsonwatch is a command-line utility that lets you track changes in JSON data delivered by a command or a web (HTTP/HTTPS) API.
 jsonwatch requests data from the source repeatedly at a set interval.
 It displays the differences when the data changes.
-It is similar but not identical to how [watch(1)](https://manpages.debian.org/stable/procps/watch.1.en.html) with the `-d` switch works for plain-text data.
+It is similar but not identical to how [watch(1)](https://manpages.debian.org/stable/procps/watch.1.en.html) with the `-d` switch works for plain text.
 
 jsonwatch has been tested on Debian 12, Ubuntu 24.04, macOS 14, and Windows 10 and Server 2022.
 
@@ -15,7 +15,7 @@ and
 
 ## Installation
 
-Prebuilt binaries are available for Linux and Windows.
+Prebuilt binaries are available for Linux (x86_64) and Windows (x86).
 Binaries are attached to releases on the
 ["Releases"](https://github.com/dbohdan/jsonwatch/releases)
 page.
@@ -73,7 +73,7 @@ cargo install just
 ```
 
 3\. Configure Cargo for cross-compilation.
-    Add the following in `~/.cargo/config`.
+    Add the following to `~/.cargo/config`.
 
 ```toml
 [target.i686-pc-windows-gnu]
@@ -94,28 +94,66 @@ just release-windows
 ```none
 Track changes in JSON data
 
-Usage: jsonwatch [OPTIONS]
+Usage: jsonwatch [OPTIONS] <COMMAND>
+
+Commands:
+  cmd   Execute a command and track changes in the JSON output
+  url   Fetch a URL and track changes in the JSON data
+  help  Print this message or the help of the given subcommand(s)
 
 Options:
-  -c, --command <command>   Command to execute
-  -u, --url <url>           URL to fetch
-  -n, --interval <seconds>  Polling interval in seconds [default: 5]
-      --no-date             Don't print date and time for each diff
-      --no-initial-values   Don't print initial JSON values
+  -D, --no-date             Don't print date and time for each diff
+  -I, --no-initial-values   Don't print initial JSON values
+  -d, --debug               Print raw data to standard error with a timestamp
+  -n, --interval <seconds>  Polling interval in seconds [default: 1]
   -h, --help                Print help
   -V, --version             Print version
 ```
 
-## Use examples
+### `cmd` subcommand
 
-### Commands
-
-#### *nix
-
-Testing jsonwatch.
+You can use `c`, `cmd`, or `command` as the name of the subcommand.
 
 ```none
-$ jsonwatch -n 1 -c "echo '{ \"filename\": \"'\$(mktemp -u)'\"}'"
+Execute a command and track changes in the JSON output
+
+Usage: jsonwatch cmd <command> [arg]...
+
+Arguments:
+  <command>  Command to execute
+  [arg]...   Arguments to the command
+
+Options:
+  -h, --help  Print help
+```
+
+### `url` subcommand
+
+You can use `u` or `url` as the name of the subcommand.
+
+```none
+Fetch a URL and track changes in the JSON data
+
+Usage: jsonwatch url [OPTIONS] <url>
+
+Arguments:
+  <url>  URL to fetch
+
+Options:
+  -A, --user-agent <user-agent>  Custom User-Agent string [default: curl/7.58.0]
+  -h, --help                     Print help
+```
+
+## Use examples
+
+### Command
+
+#### Testing jsonwatch
+
+This command uses the POSIX shell to generate random data as a test.
+
+```none
+$ jsonwatch -n 1 cmd sh -c "echo '{ \"filename\": \"'\$(mktemp -u)'\"}'"
 
 {
   "filename": "/tmp/tmp.dh3Y7LJTaK"
@@ -127,10 +165,12 @@ $ jsonwatch -n 1 -c "echo '{ \"filename\": \"'\$(mktemp -u)'\"}'"
 2020-01-19T18:52:23+0000 .filename: "/tmp/tmp.1LGk4ok8O2" -> "/tmp/tmp.wWulyho8Qj"
 ```
 
-Docker process information.
+#### Docker
+
+The command in this example tracks Docker process information when you have a single running container.
 
 ```none
-$ jsonwatch -c 'docker ps -a "--format={{json .}}"' -n 1
+$ jsonwatch command docker ps -a "--format={{json .}}"
 
 2020-01-19T18:57:20+0000
     + .Command: "\"bash\""
@@ -158,12 +198,19 @@ $ jsonwatch -c 'docker ps -a "--format={{json .}}"' -n 1
     .Status: "Up 2 seconds" -> "Up 3 seconds"
 ```
 
-#### Windows
+With multiple running containers, you will need a more complex command to transform the [JSON Lines](https://jsonlines.org/) output into a single JSON document.
+For example, it can be the following command with [jq](https://en.wikipedia.org/wiki/Jq_(programming_language)):
 
-On Windows, `-c` executes `cmd.exe` commands.
+```shell
+jsonwatch -I cmd sh -c 'docker ps -a "--format={{json .}}" | jq -s .'
+```
+
+#### `cmd.exe` on Windows
+
+Below is the output log of a simple test on Windows.
 
 ```none
-> jsonwatch -c "type tests\weather1.json"
+> jsonwatch command cmd.exe /c "type tests\weather1.json"
 
 {
   "clouds": {
@@ -218,15 +265,14 @@ On Windows, `-c` executes `cmd.exe` commands.
 2020-01-19T18:51:23+0000 - .test: false
 ```
 
-### URLs
+### URL
 
-Watching a URL works identically on *nix and on Windows.
+#### Weather tracking
 
-Weather tracking.
-(This API no longer works without a key.)
+The API in this example no longer works without a key.
 
 ```none
-$ jsonwatch -u http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua --no-initial-values -n 300
+$ jsonwatch url --no-initial-values -n 300 'http://api.openweathermap.org/data/2.5/weather?q=Kiev,ua'
 
 2014-03-17T23:06:19.073790
     + .rain.1h: 0.76
@@ -238,11 +284,12 @@ $ jsonwatch -u http://api.openweathermap.org/data/2.5/weather\?q\=Kiev,ua --no-i
     .sys.message: 0.0353 -> 0.0083
 ```
 
-Geolocation.
-(Try this on a mobile device.)
+#### Geolocation
+
+Try this on a mobile device.
 
 ```none
-$ jsonwatch -u https://ipinfo.io/ --no-initial-values -n 300
+$ jsonwatch u --no-initial-values -n 300 https://ipinfo.io/
 ```
 
 ## License

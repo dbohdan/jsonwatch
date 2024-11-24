@@ -1,71 +1,96 @@
 use chrono::prelude::*;
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use jsonwatch::diff;
 use std::{process::Command, str, thread, time};
 
-#[derive(Debug)]
-enum DataSource {
-    Command(String),
-    URL(String),
-}
-
 #[derive(Parser, Debug)]
-#[command(name = "jsonwatch")]
-#[command(about = "Track changes in JSON data", version = "0.6.0")]
-struct Opts {
-    /// Command to execute
-    #[arg(short, long, value_name = "command", group = "source")]
-    command: Option<String>,
-
-    /// URL to fetch
-    #[arg(short, long, value_name = "url", group = "source")]
-    url: Option<String>,
-
-    /// Polling interval in seconds
-    #[arg(short = 'n', long, value_name = "seconds", default_value = "5")]
-    interval: u32,
-
+#[command(
+    name = "jsonwatch",
+    about = "Track changes in JSON data",
+    version = "0.7.0"
+)]
+struct Cli {
     /// Don't print date and time for each diff
-    #[arg(long)]
+    #[arg(short = 'D', long)]
     no_date: bool,
 
     /// Don't print initial JSON values
-    #[arg(long)]
+    #[arg(short = 'I', long)]
     no_initial_values: bool,
+
+    /// Print raw data to standard error with a timestamp
+    #[arg(short = 'd', long = "debug")]
+    debug: bool,
+
+    /// Polling interval in seconds
+    #[arg(short = 'n', long, value_name = "seconds", default_value = "1")]
+    interval: u32,
+
+    /// Subcommands for different data sources
+    #[command(subcommand)]
+    command: Commands,
 }
 
-impl Opts {
-    fn get_data_source(&self) -> DataSource {
-        match (&self.command, &self.url) {
-            (Some(cmd), None) => DataSource::Command(cmd.clone()),
-            (None, Some(url)) => DataSource::URL(url.clone()),
-            _ => unreachable!("clap ensures exactly one source is provided"),
-        }
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Execute a command and track changes in the JSON output
+    #[command(aliases(["c", "command"]))]
+    Cmd {
+        /// Command to execute
+        #[arg(value_name = "command")]
+        command: String,
+
+        /// Arguments to the command
+        #[arg(value_name = "arg", trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+
+    /// Fetch a URL and track changes in the JSON data
+    #[command(aliases(["u"]))]
+    Url {
+        /// URL to fetch
+        #[arg(value_name = "url")]
+        url: String,
+
+        /// Custom User-Agent string
+        #[arg(
+            short = 'A',
+            long = "user-agent",
+            value_name = "user-agent",
+            default_value = "curl/7.58.0"
+        )]
+        user_agent: String,
+    },
+}
+
+fn run_command(command: &String, args: &[String]) -> String {
+    if command.is_empty() {
+        return String::new();
+    }
+
+    let output = Command::new(&command).args(args).output();
+
+    match output {
+        Ok(output) => String::from_utf8_lossy(&output.stdout).into_owned(),
+        Err(_) => String::new(),
     }
 }
 
-const USER_AGENT: &str = "curl/7.58.0";
-
-fn run_command(command: &str) -> String {
-    let output = if cfg!(target_os = "windows") {
-        Command::new("cmd").arg("/c").arg(command).output()
+fn fetch_url(url: &str, user_agent: &str) -> String {
+    if let Ok(result) = ureq::get(url).set("User-Agent", user_agent).call() {
+        result.into_string().unwrap_or_default()
     } else {
-        Command::new("sh").arg("-c").arg(command).output()
-    };
-
-    let stdout = match output {
-        Ok(output) => str::from_utf8(&output.stdout).unwrap_or("").to_string(),
-        _ => "".to_string(),
-    };
-
-    stdout
+        String::new()
+    }
 }
 
-fn fetch_url(url: &str) -> String {
-    if let Ok(result) = ureq::get(url).set("User-Agent", USER_AGENT).call() {
-        result.into_string().unwrap_or("".to_string())
-    } else {
-        "".to_string()
+fn print_debug(raw_data: &str) {
+    let local = Local::now();
+    let timestamp = local.format("%Y-%m-%dT%H:%M:%S%z");
+    eprint!("[DEBUG {}]\n{}", timestamp, raw_data);
+
+    if !raw_data.is_empty() && !raw_data.ends_with("\n") {
+        eprintln!()
     }
 }
 
@@ -73,25 +98,33 @@ fn watch(
     interval: time::Duration,
     print_date: bool,
     print_initial: bool,
+    debug: bool,
     lambda: impl Fn() -> String,
 ) {
+    let raw_data = lambda();
     let mut data: Option<serde_json::Value> =
-        serde_json::from_str(&lambda()).ok();
+        serde_json::from_str(&raw_data).ok();
+
     if print_initial {
-        match &data {
-            Some(json) => {
-                println!("{}", serde_json::to_string_pretty(&json).unwrap())
-            }
-            _ => {}
+        if debug {
+            print_debug(&raw_data);
+        }
+
+        if let Some(json) = &data {
+            println!("{}", serde_json::to_string_pretty(&json).unwrap())
         }
     }
 
     loop {
         thread::sleep(interval);
 
-        let prev = data.clone();
+        let raw_data = lambda();
+        if debug {
+            print_debug(&raw_data);
+        }
 
-        data = serde_json::from_str(&lambda()).ok();
+        let prev = data.clone();
+        data = serde_json::from_str(&raw_data).ok();
 
         let diff = diff::diff(&prev, &data);
 
@@ -107,7 +140,7 @@ fn watch(
             if changed == 1 {
                 print!(" ");
             } else {
-                println!("");
+                println!();
             }
         }
 
@@ -124,17 +157,26 @@ fn watch(
 }
 
 fn main() {
-    let opts = Opts::parse();
+    let cli = Cli::parse();
 
-    let lambda: Box<dyn Fn() -> String> = match opts.get_data_source() {
-        DataSource::Command(cmd) => Box::new(move || run_command(&cmd)),
-        DataSource::URL(url) => Box::new(move || fetch_url(&url)),
+    let lambda: Box<dyn Fn() -> String> = match &cli.command {
+        Commands::Cmd { args, command } => {
+            let args = args.clone();
+            let command = command.clone();
+            Box::new(move || run_command(&command, &args))
+        }
+        Commands::Url { url, user_agent } => {
+            let url = url.clone();
+            let user_agent = user_agent.clone();
+            Box::new(move || fetch_url(&url, &user_agent))
+        }
     };
 
     watch(
-        time::Duration::from_secs(opts.interval as u64),
-        !opts.no_date,
-        !opts.no_initial_values,
+        time::Duration::from_secs(cli.interval as u64),
+        !cli.no_date,
+        !cli.no_initial_values,
+        cli.debug,
         lambda,
     );
 }
