@@ -32,7 +32,7 @@ test: debug test-unit
 # The integration tests use Expect and do not work on Windows.
 [unix]
 test-integration:
-  "$TCLSH" tests/integration.tcl
+  "$TCLSH" tests/integration.test
 
 test-unit:
   cargo test
