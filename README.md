@@ -89,6 +89,23 @@ cd jsonwatch
 just release-windows
 ```
 
+## Usage
+
+```none
+Track changes in JSON data
+
+Usage: jsonwatch [OPTIONS]
+
+Options:
+  -c, --command <command>   Command to execute
+  -u, --url <url>           URL to fetch
+  -n, --interval <seconds>  Polling interval in seconds [default: 5]
+      --no-date             Don't print date and time for each diff
+      --no-initial-values   Don't print initial JSON values
+  -h, --help                Print help
+  -V, --version             Print version
+```
+
 ## Use examples
 
 ### Commands
