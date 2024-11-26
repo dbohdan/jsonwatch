@@ -279,7 +279,7 @@ We start watching the output of a `cmd.exe` command, then manually edit the file
 The API in this example no longer works without a key.
 
 ```none
-$ jsonwatch url --no-initial-values -n 300 'http://api.openweathermap.org/data/2.5/weather?q=Kiev,ua'
+$ jsonwatch --no-initial-values -n 300 url 'http://api.openweathermap.org/data/2.5/weather?q=Kiev,ua'
 
 2014-03-17T23:06:19.073790
     + .rain.1h: 0.76
@@ -296,7 +296,7 @@ $ jsonwatch url --no-initial-values -n 300 'http://api.openweathermap.org/data/2
 Try this on a mobile device.
 
 ```none
-$ jsonwatch u --no-initial-values -n 300 https://ipinfo.io/
+$ jsonwatch -I -n 300 u https://ipinfo.io/
 ```
 
 ## License
