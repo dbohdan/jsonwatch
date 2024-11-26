@@ -148,6 +148,17 @@ proc wapp-page-nested-obj {} {
 }
 
 
+proc wapp-page-headers {} {
+    wapp-mimetype application/json
+
+    wapp [format \
+        {{"X-Bar": "%s", "X-Foo": "%s"}} \
+        [wapp-param .hdr:X-BAR] \
+        [wapp-param .hdr:X-FOO] \
+    ]
+}
+
+
 wapp-start [list -fromip 127.0.0.1 -nowait -server $port -trace]
 
 
@@ -197,6 +208,26 @@ tcltest::test url-1.4 {} -body {
 
     expect {
         -regexp {    ?- \.k\.nested: "v2"\s+    \+ \.k: "v"} {
+            lindex matched
+        }
+        timeout {
+            lindex {timed out}
+        }
+    }
+} -cleanup close -result matched
+
+
+tcltest::test url-1.5 {} -body {
+    spawn $binary \
+        --interval 1 \
+        url \
+        -H {X-Foo: This is foo. } \
+        --header X-Bar:this-is-bar \
+        http://$host:$port/headers \
+        ;
+
+    expect {
+        -regexp {this-is-bar.*This is foo\."} {
             lindex matched
         }
         timeout {

@@ -7,7 +7,7 @@ use std::{process::Command, str, thread, time};
 #[command(
     name = "jsonwatch",
     about = "Track changes in JSON data",
-    version = "0.7.0"
+    version = "0.8.0"
 )]
 struct Cli {
     /// Don't print date and time for each diff
@@ -41,7 +41,11 @@ enum Commands {
         command: String,
 
         /// Arguments to the command
-        #[arg(value_name = "arg", trailing_var_arg = true, allow_hyphen_values = true)]
+        #[arg(
+            value_name = "arg",
+            trailing_var_arg = true,
+            allow_hyphen_values = true
+        )]
         args: Vec<String>,
     },
 
@@ -60,6 +64,15 @@ enum Commands {
             default_value = "curl/7.58.0"
         )]
         user_agent: String,
+
+        /// Custom headers in the format "X-Foo: bar"
+        #[arg(
+            short = 'H',
+            long = "header",
+            value_name = "header",
+            action = clap::ArgAction::Append
+        )]
+        headers: Vec<String>,
     },
 }
 
@@ -76,8 +89,16 @@ fn run_command(command: &String, args: &[String]) -> String {
     }
 }
 
-fn fetch_url(url: &str, user_agent: &str) -> String {
-    if let Ok(result) = ureq::get(url).set("User-Agent", user_agent).call() {
+fn fetch_url(url: &str, user_agent: &str, headers: &[String]) -> String {
+    let mut req = ureq::get(url).set("User-Agent", user_agent);
+
+    for header in headers {
+        if let Some((name, value)) = header.split_once(':') {
+            req = req.set(name.trim(), value.trim());
+        }
+    }
+
+    if let Ok(result) = req.call() {
         result.into_string().unwrap_or_default()
     } else {
         String::new()
@@ -165,10 +186,15 @@ fn main() {
             let command = command.clone();
             Box::new(move || run_command(&command, &args))
         }
-        Commands::Url { url, user_agent } => {
+        Commands::Url {
+            url,
+            user_agent,
+            headers,
+        } => {
             let url = url.clone();
             let user_agent = user_agent.clone();
-            Box::new(move || fetch_url(&url, &user_agent))
+            let headers = headers.clone();
+            Box::new(move || fetch_url(&url, &user_agent, &headers))
         }
     };
 

@@ -146,6 +146,7 @@ Arguments:
 
 Options:
   -A, --user-agent <user-agent>  Custom User-Agent string [default: curl/7.58.0]
+  -H, --header <header>          Custom headers in the format "X-Foo: bar"
   -h, --help                     Print help
 ```
 
