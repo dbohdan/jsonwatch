@@ -24,15 +24,15 @@ release-windows:
   strip jsonwatch-win32.exe
 
 [unix]
-test: debug test-unit test-integration
+test: debug test-unit test-e2e
 
 [windows]
 test: debug test-unit
 
-# The integration tests use Expect and do not work on Windows.
+# The end-to-end tests use Expect and do not work on Windows.
 [unix]
-test-integration:
-  "$TCLSH" tests/integration.test
+test-e2e:
+  "$TCLSH" tests/e2e.test
 
 test-unit:
   cargo test
