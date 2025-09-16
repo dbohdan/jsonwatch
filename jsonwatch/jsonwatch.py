@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # jsonwatch
-# Copyright (c) 2014 Danyil Bohdan
+# Copyright (c) 2014, 2025 D. Bohdan
 # This code is released under the MIT license. See the file LICENSE.
 
 from __future__ import print_function
