@@ -1,0 +1,25 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy3.10', 'pypy3.11']
+        os: ['macos-latest', 'ubuntu-latest', 'windows-latest']
+
+    steps:
+      - name: 'Disable `autocrlf` in Git'
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Test
+        run: |
+          python -m unittest
