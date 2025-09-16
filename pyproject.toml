@@ -1,0 +1,128 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "jsonwatch"
+version = "0.2.2"
+description = "Track changes in JSON data"
+authors = [{ name = "D. Bohdan", email = "dbohdan@dbohdan.com" }]
+requires-python = ">= 3.8"
+readme = "README.md"
+license = "MIT"
+
+[project.urls]
+Homepage = "http://github.com/dbohdan/jsonwatch"
+
+[project.scripts]
+jsonwatch = "jsonwatch.jsonwatch:main"
+
+[dependency-groups]
+dev = ["ruff==0.13.0"]
+
+[tool.hatch.build.targets.sdist]
+include = ["jsonwatch"]
+
+[tool.hatch.build.targets.wheel]
+include = ["jsonwatch"]
+
+[tool.poe.env]
+"PYTHON_SOURCES" = "jsonwatch/ tests/"
+
+[tool.poe.tasks.check]
+sequence = ["format", "lint"]
+help = "Run the formatter, then all static checks"
+ignore_fail = "return_non_zero"
+
+[tool.poe.tasks.files]
+cmd = "echo ${PYTHON_SOURCES}"
+help = "Print the list of files and directories used for static checks"
+
+[tool.poe.tasks.format]
+cmd = "ruff format ${PYTHON_SOURCES}"
+help = "Run the Ruff formatter"
+
+[tool.poe.tasks.lint]
+cmd = "ruff check ${PYTHON_SOURCES}"
+help = "Run Ruff"
+
+[tool.poe.tasks.test]
+cmd = "python -m unittest"
+help = "Run Python module 'unittest'"
+
+[tool.ruff]
+exclude = ["tests/bool-null-key.py"]
+src = ["src", "tests"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+  "A",      # flake8-builtins
+  "AIR",    # Airflow
+  "ARG",    # flake8-unused-arguments
+  "ASYNC",  # flake8-async
+  "B",      # flake8-bugbear
+  "BLE",    # flake8-blind-except
+  "C4",     # flake8-comprehensions
+  "C90",    # McCabe cyclomatic complexity
+  # "CPY",  # Copyright-related rules
+  "DTZ",    # flake8-datetimez
+  "E",      # pycodestyle
+  "EM",     # flake8-errmsg
+  "EXE",    # flake8-executable
+  "F",      # Pyflakes
+  "FA",     # flake8-future-annotations
+  "FBT",    # flake8-boolean-trap
+  "FIX",    # flake8-fixme
+  "FLY",    # flynt
+  "G",      # flake8-logging-format
+  "I",      # isort
+  "ICN",    # flake8-import-conventions
+  "INP",    # flake8-no-pep420
+  "INT",    # flake8-gettext
+  "ISC",    # flake8-implicit-str-concat
+  "N",      # pep8-naming
+  "PERF",   # Perflint
+  "PGH",    # pygrep-hooks
+  "PIE",    # flake8-pie
+  "PL",     # Pylint
+  "PT",     # flake8-pytest-style
+  "PYI",    # flake8-pyi
+  "RET",    # flake8-return
+  "RSE",    # flake8-raise
+  "RUF",    # Ruff-specific rules
+  "S",      # flake8-bandit
+  "SIM",    # flake8-simplify
+  "SLF",    # flake8-self
+  "SLOT",   # flake8-slots
+  "T10",    # flake8-debugger
+  "T20",    # flake8-print
+  "TCH",    # flake8-type-checking
+  "TD",     # flake8-todos
+  "TID",    # flake8-tidy-imports
+  "W",      # pycodestyle
+  "YTT",    # flake8-2020
+  # "ANN",  # flake8-annotations
+  # "COM",  # flake8-commas
+  # "D",    # pydocstyle
+  # "DJ",   # flake8-django
+  # "ERA",  # eradicate
+  # "NPY",  # NumPy-specific rules
+  # "PD",   # pandas-vet
+  "PTH",    # flake8-use-pathlib
+  # "Q",    # flake8-quotes
+  # "TRY",  # tryceratops
+  # "UP",   # pyupgrade
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PT009"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 14
+
+[tool.ruff.lint.pylint]
+allow-magic-value-types = ["int", "str"]
+max-args = 12
+max-branches = 20
+max-statements = 100

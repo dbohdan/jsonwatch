@@ -1,7 +1,8 @@
 # Copyright (c) 2014, 2025 D. Bohdan
 # This code is released under the MIT license. See the file LICENSE.
 
-def json_flatten(a, prefix=''):
+
+def json_flatten(a, prefix=""):
     """Flatten a JSON structure into a dict with str paths as keys.
 
     For example,
@@ -24,21 +25,20 @@ def json_flatten(a, prefix=''):
     res = {}
     if isinstance(a, list):
         for n, elem in enumerate(a):
-            add_flat(res, prefix, json_flatten(elem, \
-                                               prefix + "[{0}]".format(n)))
+            add_flat(res, prefix, json_flatten(elem, prefix + f"[{n}]"))
     elif isinstance(a, dict):
-        for key in a.keys():
+        for key in a:
             new_prefix = prefix
             # Use a different syntax for keys with spaces.
-            if ' ' in key:
-                new_prefix += "['{0}']".format(key)
+            if " " in key:
+                new_prefix += f"['{key}']"
             else:
-                new_prefix += ".{0}".format(key)
+                new_prefix += f".{key}"
             add_flat(res, prefix, json_flatten(a[key], new_prefix))
     # If a is not processable by json_flatten (e.g., it's a str) then store
     # it in res. However, at the top level we don't want to store such an a
     # as {'': a}. We also don't store None in res; we return it instead.
-    elif a is not None and prefix != '':
+    elif a is not None and prefix != "":
         res[prefix] = a
     else:
         res = a
@@ -51,16 +51,14 @@ def c_keys(a, b):
     a_keys = set(a.keys())
     b_keys = set(b.keys())
     common_keys = a_keys.intersection(b_keys)
-    return common_keys, a_keys, b_keys, \
-            a_keys - common_keys, b_keys - common_keys
+    return common_keys, a_keys, b_keys, a_keys - common_keys, b_keys - common_keys
 
 
 def remove_none_values(dict_):
     """Remove from `dict_` key-value pairs where the values are `None`."""
 
     res = {}
-    res.update((key, value) for key, value in dict_.iteritems() \
-                if value is not None)
+    res.update((key, value) for key, value in dict_.items() if value is not None)
     return res
 
 
@@ -94,16 +92,13 @@ def json_flat_diff(a, b):
 def json_diff_str(diff):
     """Format a diff for human reading. Retuns a list of strs."""
 
-    res = []
     flat_diff_from, flat_diff_to = diff
     flat_diff_from = remove_none_values(flat_diff_from)
     flat_diff_to = remove_none_values(flat_diff_to)
     common_keys, _, _, from_keys, to_keys = c_keys(flat_diff_from, flat_diff_to)
-    for key in from_keys:
-        res.append("- {0}: {1}".format(key, flat_diff_from[key]))
-    for key in common_keys:
-        res.append("{0}: {1} -> {2}".format(key, flat_diff_from[key], \
-                                            flat_diff_to[key]))
-    for key in to_keys:
-        res.append("+ {0}: {1}".format(key, flat_diff_to[key]))
+    res = [f"- {key}: {flat_diff_from[key]}" for key in from_keys]
+    res.extend(
+        f"{key}: {flat_diff_from[key]} -> {flat_diff_to[key]}" for key in common_keys
+    )
+    res.extend(f"+ {key}: {flat_diff_to[key]}" for key in to_keys)
     return res
