@@ -53,7 +53,7 @@ help = "Run Python module 'unittest'"
 [tool.ruff]
 exclude = ["tests/bool-null-key.py"]
 src = ["src", "tests"]
-target-version = "py310"
+target-version = "py38"
 
 [tool.ruff.lint]
 select = [
