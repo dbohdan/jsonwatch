@@ -1,6 +1,6 @@
 [package]
 name = "jsonwatch"
-version = "0.10.0"
+version = "0.11.0"
 authors = ["D. Bohdan <dbohdan@dbohdan.com>"]
 edition = "2018"
 license = "MIT"

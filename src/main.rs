@@ -8,7 +8,7 @@ use std::{error::Error, fmt::Write, process::Command, str, thread, time};
 #[command(
     name = "jsonwatch",
     about = "Track changes in JSON data",
-    version = "0.10.0"
+    version = "0.11.0"
 )]
 struct Cli {
     /// Don't print date and time for each diff
@@ -194,13 +194,17 @@ fn watch(
         match serde_json::from_str(&input_data) {
             Ok(json) => Some(json),
             Err(e) => {
-                if verbose >= 1 && !input_data.trim().is_empty() {
+                if verbose >= 1 {
                     let local = Local::now();
                     let timestamp = local.format(&TIMESTAMP_FORMAT);
-                    eprintln!(
-                        "[ERROR {}] JSON parsing error: {}",
-                        timestamp, e
-                    );
+                    if input_data.trim().is_empty() {
+                        eprintln!("[ERROR {}] Blank response", timestamp);
+                    } else {
+                        eprintln!(
+                            "[ERROR {}] JSON parsing error: {}",
+                            timestamp, e
+                        );
+                    }
                 }
 
                 None
@@ -246,20 +250,19 @@ fn watch(
         data = match serde_json::from_str(&input_data) {
             Ok(json) => Some(json),
             Err(e) => {
-                if !input_data.trim().is_empty() {
-                    if verbose >= 1 {
-                        let local = Local::now();
-                        let timestamp = local.format(&TIMESTAMP_FORMAT);
+                if verbose >= 1 {
+                    let local = Local::now();
+                    let timestamp = local.format(&TIMESTAMP_FORMAT);
+                    if input_data.trim().is_empty() {
+                        eprintln!("[ERROR {}] Blank response", timestamp);
+                    } else {
                         eprintln!(
                             "[ERROR {}] JSON parsing error: {}",
                             timestamp, e
                         );
                     }
-
-                    continue;
                 }
-
-                None
+                continue;
             }
         };
 

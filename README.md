@@ -98,8 +98,7 @@ jsonwatch processes valid JSON.
 The following behavior applies:
 
 - If the data source (command or URL) produces an error (non-zero exit status or HTTP failure response), the stored data remains unchanged
-- Responses with invalid JSON do not update the stored data
-- An empty response (no data or whitespace only) sets stored data to empty, potentially causing a change
+- Responses with invalid JSON, including empty responses, do not update the stored data
 
 Some security measures are in place:
 

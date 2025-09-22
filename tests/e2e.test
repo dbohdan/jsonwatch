@@ -340,19 +340,14 @@ tcltest::test error-1.2 {garbage JSON} -setup {set timeout 5} -body {
 
 tcltest::test error-1.3 {blank response} -setup {set timeout 5} -body {
     # JSON -> blank -> JSON.
-    # Should result in two changes.
+    # Should result in one change.
     spawn $binary -v -n 1 --no-initial-values url http://$host:$port/json-blank-json
 
     expect {
-        -glob {- .counter: 0} {}
+        -glob {.counter: 0 -> 2} { return matched }
         timeout { return {timed out} }
     }
-
-    expect {
-        -glob {+ .counter: 2} { return matched }
-        timeout { return {timed out} }
-    }
-} -cleanup close -result matched
+} -cleanup {close; set timeout 5} -result matched
 
 
 # Extra options.
