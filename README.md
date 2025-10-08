@@ -181,10 +181,10 @@ Options:
 ```none
 Generate shell completions
 
-Usage: jsonwatch init <SHELL>
+Usage: jsonwatch init <shell>
 
 Arguments:
-  <SHELL>  The shell to generate completions for [possible values: bash,
+  <shell>  The shell to generate completions for [possible values: bash,
 elvish, fish, powershell, zsh]
 
 Options:

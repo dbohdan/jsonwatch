@@ -84,7 +84,7 @@ enum Commands {
     #[command()]
     Init {
         /// The shell to generate completions for
-        #[arg(value_enum)]
+        #[arg(value_enum, value_name = "shell")]
         shell: Shell,
     },
 }
